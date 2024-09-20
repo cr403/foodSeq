@@ -1,0 +1,32 @@
+------------------------
+title: Common to All R Analysis 
+------------------------
+
+# Load Libraries 
+```{r}
+# Installs BiocManager if needed, which is used to install Bioconductor packages (repository for bioinformatics packages)
+if(!requireNamespace("BiocManager")){
+  install.packages("BiocManager")
+}
+
+# List of packages needed for analysis # NOTE: you may need to input a/s/n when prompted for package updates 
+packages <- c("phyloseq", "dada2", "microbiome", "MANOVA.RM", "RVAideMemoire", "tibble", "MetBrewer", "RColorBrewer", "tidyverse", "tidyr", "reshape2", "dplyr", "permute", "afex", "lme4", "car", "emmeans", "ggpubr", "ALDEx2", "scales")
+
+# For each package, checks if it needs to be installed 
+for (pkg in packages) { 
+  if(!requireNamespace(pkg, quitely = TRUE)) {
+    BiocManager::install(pkg)
+  }}
+
+# Loads all libraries in package list 
+lapply(packages, library, character.only = TRUE)
+```
+# Read Phyloseq Data 
+```{r}
+readRDS('<path/to/ps.rds>')
+```
+# Calculate relative abundance 
+```{r}
+ps.ra <- transform_sample_counts(ps, function(x){x/sum(x)})
+```
+
