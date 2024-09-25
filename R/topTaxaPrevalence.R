@@ -52,10 +52,12 @@ topTaxaPrevalence <- function(phyloseq_obj, n, title, amplicon) {
   # Plot the top n most prevalent taxa with y-axis as percentage
   topTaxaPlot <- ggplot(top_taxa, aes(x = reorder(lowestLevel, -prevalence), y = prevalence * 100, fill=lowestLevel)) +
     geom_bar(stat = "identity") +
-    labs(x = "Taxa", y = "Percent of Samples", title = title) +
-    # scale_fill_discrete(guide = guide_legend(reverse = FALSE)) +  # Reverse the legend order
+    labs(y = "% of Samples", title = title) +
     scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentage
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+          axis.text.y = element_text(size = 12),
+          axis.title.x = element_blank(),
+          title = element_text(size = 14))
   
   return(list(plot = topTaxaPlot, top.taxa = top_taxa))
   
