@@ -54,6 +54,7 @@ topTaxaPrevalence <- function(phyloseq_obj, n, title, amplicon) {
     geom_bar(stat = "identity") +
     labs(y = "% of Samples", title = title) +
     scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentage
+    ylim(0,100) + 
     theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
           axis.text.y = element_text(size = 12),
           axis.title.x = element_blank(),
