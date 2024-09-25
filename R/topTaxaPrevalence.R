@@ -5,25 +5,45 @@ library(ggplot2)
 library(tidyr)
 
 # Function to plot the top n most prevalent taxa
-topTaxaPrevalence <- function(phyloseq_obj, n, title) {
-  
+topTaxaPrevalence <- function(phyloseq_obj, n, title, amplicon) {
+
+  # Subset the phyloseq object for the desired amplicon 
+  if(amplicon == "trnl") {
+    phyloseq_obj <- phyloseq_obj %>%
+      subset_samples(amplicon=="trnl")
+  }
+  if(amplicon == "12s") {
+    phyloseq_obj <- phyloseq_obj %>%
+      subset_samples(amplicon=="12s")
+  }
+  else(phyloseq_obj <- phyloseq_obj)
+    
   # Melt the phyloseq object to long format
   phyloseq_long <- psmelt(phyloseq_obj)
   
   # Coalesce the taxonomic levels
   phyloseq_long <- phyloseq_long %>%
-    mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom))
+    mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom)) %>%
+    filter(!is.na(lowestLevel)) 
   
-  # Calculate prevalence for each OTU
+  # Calculate prevalence for each OTU (accounts for distinct OTU's assigning to the same lowestLevel)
   prevalence_df <- phyloseq_long %>%
-    group_by(OTU, lowestLevel) %>%
-    summarise(prevalence = sum(Abundance > 0) / n_distinct(Sample)) %>%
+    group_by(lowestLevel, Sample) %>%
+    summarise(Abundance = sum(Abundance > 0)) %>%  # Check if any OTU for this lowestLevel is present in the sample
+    ungroup() %>%
+    group_by(lowestLevel) %>%
+    summarise(prevalence = sum(Abundance > 0) / n_distinct(Sample)) %>%  # Recalculate prevalence
     ungroup()
   
-  # Get the top n most prevalent taxa
+  ## Get the top n most prevalent taxa
+  # Use this if there are a lot of ties within prevalence -- will appear if there are more than 10 taxa on graph 
   top_taxa <- prevalence_df %>%
-    top_n(n, prevalence) %>%
+    slice_max(prevalence, n = n, with_ties = FALSE) %>%
     arrange(desc(prevalence))
+  ## Use this if you want equal prevalence values to be counted together towards n 
+  #top_taxa <- prevalence_df %>%
+  #  top_n(n, prevalence) %>%
+  #  arrange(desc(prevalence))
   
   # Reorder the factor levels of lowestLevel based on prevalence
   top_taxa <- top_taxa %>%
@@ -37,9 +57,9 @@ topTaxaPrevalence <- function(phyloseq_obj, n, title) {
     scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentage
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
-  return(topTaxaPlot)
+  return(list(plot = topTaxaPlot, top.taxa = top_taxa))
   
   # example input: 
-  topTaxaPrevalence(ps, 10, "Top 10 Taxa at Baseline")
+  topTaxaPrevalence(ps, 10, "Top 10 Taxa at Baseline", "trnl")
 }
 ```
