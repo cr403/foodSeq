@@ -1,0 +1,21 @@
+Package: foodSeq
+Type: Package
+Title: Custom functions for FoodSeq
+Version: 0.0.1
+Author: Caroline Rivera <carivera914@gmail.com>
+Maintainer: Caroline Rivera <carivera914@gmail.com>
+Description: This package is for sharing and maintaining custom functions written for FoodSeq data analysis as conducted in the laboratory of Dr. Lawrence David at Duke University, Durham, NC.
+Imports:
+    Biostrings,
+    crayon,
+    dada2,
+    metacoder,
+    phyloseq,
+    ShortRead,
+    tidyverse
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.2
+Depends: 
+    R (>= 2.10)
