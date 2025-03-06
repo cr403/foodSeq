@@ -1,0 +1,6 @@
+export(foodSeqSetup)
+export(PCAPlot) 
+
+import(tidyverse)
+import(phyloseq) 
+import(Biostrings)
