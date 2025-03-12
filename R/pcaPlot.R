@@ -9,6 +9,8 @@ pcaPlot <- function(ps, # clr transformed and filtered data
                     colorName = NULL, # what to display variable name as in legend
                     nTaxa = 10, # number of taxa to display
                     customColors = NULL, # optional named vector of colors
+                    customGradient = NULL, # optional df of low/high colors for gradient
+                    mid = "mean", # for customGradient -- midpoint to median, mean, middle of range 
                     xPC = 1, # Principal Component for x-axis
                     yPC = 2,  # Principal Component for y-axis
                     ellipse = FALSE # optional add centroid ellipses 
@@ -62,6 +64,22 @@ pcaPlot <- function(ps, # clr transformed and filtered data
   # Add custom color scale if provided
   if (!is.null(customColors)) {
     pca.plot <- pca.plot + scale_color_manual(values = customColors)
+  }
+
+  # Define a function to calculate the midpoint
+  midpoint <- switch(mid,
+    "middle" = mean(range(pca.df[[colorVar]], na.rm = TRUE)),  # Mean of min and max
+    "median" = median(pca.df[[colorVar]], na.rm = TRUE),       # Median
+    "mean" = mean(pca.df[[colorVar]], na.rm = TRUE),           # Mean
+    stop("'mid' must be one of 'middle', 'median', or 'mean'") # Error for invalid 'mid'
+  )
+
+  # Add custom color gradient if provided 
+  if (!is.null(customGradient)) { 
+    pca.plot <- pca.plot + scale_color_gradient2(low = paste0(customGradient$low), 
+                                                 mid = paste0(customGradient$mid), 
+                                                 high = paste0(customGradient$high),
+                                                 midpoint = midpoint)
   }
   
   # Add optional ellipses
