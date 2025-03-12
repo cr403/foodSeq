@@ -4,6 +4,14 @@ foodseqSetup <- function(physeq,
                          collapse == FALSE) {
   ps <- physeq                      
   amplicon <- tolower(amplicon) # change casing for matching 
+
+  # Initializes sample data if you're working with raw phyloseq 
+  if(is.null(ps@sam_data)) {
+  ids <- sample_names(ps) 
+  samdf <- data.frame(row.names = ids) %>%
+    mutate(Sample_ID = row.names(.))
+  sample_data(ps) <- sample_data(samdf) 
+  }
   
   # trnL 
   if(amplicon == "trnl") {
