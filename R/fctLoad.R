@@ -9,7 +9,8 @@ fctLoad <- function(physeq,
   # Extract taxa information 
   taxtab <- ps.plot@tax_table %>%
     data.frame() %>%
-    rownames_to_column(var = "asv")
+    rownames_to_column(var = "asv") %>%
+    mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom)) 
   
   # Extract loadings 
   load.df <- pca_output$loadings %>% 
@@ -23,7 +24,11 @@ fctLoad <- function(physeq,
   result <- load.df %>% 
     slice_max(order_by = abs(-!!PC_col), n = nTaxa) %>%
     relocate(CommonName, .after = asv) %>%
-    relocate(PC_col, .after = CommonName)  
+    relocate(PC_col, .after = CommonName) %>%
+    mutate(CommonName = case_when(
+      is.na(CommonName) ~ lowestLevel, 
+      is.na(CommonName) ~ paste0("NA", row_number()), 
+      TRUE ~ CommonName))
   
   # Plot top nTaxa 
   plot <- result %>% 
