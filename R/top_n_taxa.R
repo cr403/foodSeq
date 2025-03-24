@@ -36,12 +36,11 @@ top_n_taxa <- function(physeq,
     ggplot(aes(x = fct_reorder(lowestLevel, prevalence, .desc = TRUE), y = prevalence)) + 
     geom_bar(stat = "identity") + 
     labs(title = paste0("Top ", n, " taxa"), 
-         x = "lowestLevel", 
+         x = "", 
          y = "% samples w/ taxa") + 
     theme(title = element_text(size = 16, face = "bold"), 
           axis.title = element_text(size = 14), 
           axis.text = element_text(size = 12), 
-          axis.title.x = element_blank(), 
           axis.text.x = element_text(angle = 45, hjust = 1))
   
   return(list(top_taxa, top_taxa_plot)) 
