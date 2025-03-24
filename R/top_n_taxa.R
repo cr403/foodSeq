@@ -2,7 +2,8 @@ library(phyloseq)
 library(tidyverse) 
 
 top_n_taxa <- function(physeq,
-                       n = 10 
+                       n = 10,
+                       name = ShortName # dynamically pass in the name of the common name column to use 
                        ){
 
   ps <- physeq
@@ -24,7 +25,7 @@ top_n_taxa <- function(physeq,
   top_taxa <- taxtab %>% 
     filter(asv %in% top_asvs$asv) %>%
     left_join(top_asvs, by = "asv") %>% # add prevalence column 
-    mutate(lowestLevel = coalesce(ShortName, species, genus, family, order, class, phylum, superkingdom),
+    mutate(lowestLevel = coalesce({{name}}, species, genus, family, order, class, phylum, superkingdom),
            lowestLevel = case_when(
              is.na(lowestLevel) ~ paste0("NA", row_number()),
              TRUE ~ lowestLevel
