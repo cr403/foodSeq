@@ -3,8 +3,9 @@ library(tidyverse)
 
 top_n_taxa <- function(physeq,
                        n = 10,
-                       name = ShortName # dynamically pass in the name of the common name column to use 
-                       ){
+                       name = ShortName, # dynamically pass in the name of the common name column to use 
+                       title = NA
+                      ){
 
   ps <- physeq
   
@@ -35,13 +36,20 @@ top_n_taxa <- function(physeq,
   top_taxa_plot <- top_taxa %>% 
     ggplot(aes(x = fct_reorder(lowestLevel, prevalence, .desc = TRUE), y = prevalence)) + 
     geom_bar(stat = "identity") + 
-    labs(title = paste0("Top ", n, " taxa"), 
-         x = "", 
+    labs(x = "", 
          y = "% samples w/ taxa") + 
     theme(title = element_text(size = 16, face = "bold"), 
           axis.title = element_text(size = 14), 
           axis.text = element_text(size = 12), 
           axis.text.x = element_text(angle = 45, hjust = 1))
+
+  if(is.na(title)) { 
+      top_taxa_plot <- top_taxa_plot + 
+        labs(title = paste0("Top ", n, " taxa"))
+    } else { 
+      top_taxa_plot <- top_taxa_plot + 
+        labs(title = title) 
+      }
   
   return(list(top_taxa, top_taxa_plot)) 
 }
