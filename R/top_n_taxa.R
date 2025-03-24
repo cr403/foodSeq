@@ -4,7 +4,8 @@ library(tidyverse)
 top_n_taxa <- function(physeq,
                        n = 10,
                        name = ShortName, # dynamically pass in the name of the common name column to use 
-                       title = NA
+                       title = NA,
+                       remNA = FALSE # option to keep/remove taxa that don't have common name assignment 
                       ){
 
   ps <- physeq
@@ -17,15 +18,18 @@ top_n_taxa <- function(physeq,
     group_by(asv) %>%
     summarise(prevalence = sum(presence) / n_distinct(sample) * 100, .groups = "drop")
   
-  top_asvs <- slice_max(seqtab, order_by = prevalence, n = n)
-
   taxtab <- ps@tax_table %>% 
     data.frame() %>%
     rownames_to_column(var = "asv")
+
+  if(remNA) { 
+    taxtab <- taxtab %>%
+      filter(!is.na({{name}})) 
+  } 
   
   top_taxa <- taxtab %>% 
-    filter(asv %in% top_asvs$asv) %>%
     left_join(top_asvs, by = "asv") %>% # add prevalence column 
+    slice_max(order_by = prevalence, n = n) %>% 
     mutate(lowestLevel = coalesce({{name}}, species, genus, family, order, class, phylum, superkingdom),
            lowestLevel = case_when(
              is.na(lowestLevel) ~ paste0("NA", row_number()),
