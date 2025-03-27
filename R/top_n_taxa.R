@@ -5,7 +5,8 @@ top_n_taxa <- function(physeq,
                        n = 10,
                        name = ShortName, # dynamically pass in the name of the common name column to use 
                        title = NA,
-                       remNA = FALSE # option to keep/remove taxa that don't have common name assignment 
+                       remNA = FALSE, # option to keep/remove taxa that don't have common name assignment 
+                       color = TRUE # option to add/remove color to graph 
                       ){
 
   ps <- physeq
@@ -28,24 +29,35 @@ top_n_taxa <- function(physeq,
   } 
   
   top_taxa <- taxtab %>% 
-    left_join(top_asvs, by = "asv") %>% # add prevalence column 
+    left_join(seqtab, by = "asv") %>% # add prevalence column 
     slice_max(order_by = prevalence, n = n) %>% 
     mutate(lowestLevel = coalesce({{name}}, species, genus, family, order, class, phylum, superkingdom),
            lowestLevel = case_when(
              is.na(lowestLevel) ~ paste0("NA", row_number()),
              TRUE ~ lowestLevel
-           )) %>%
-    arrange(-prevalence)
+           ),
+           {{name}} := factor({{name}}, levels = unique({{name}}[order(prevalence)])),
+           lowestLevel = factor(lowestLevel, levels = unique(lowestLevel[order(prevalence)])))
   
   top_taxa_plot <- top_taxa %>% 
-    ggplot(aes(x = fct_reorder(lowestLevel, prevalence, .desc = TRUE), y = prevalence)) + 
-    geom_bar(stat = "identity") + 
+    ggplot(aes(x = lowestLevel, y = prevalence)) + 
+    # geom_bar(stat = "identity") + 
+    coord_flip() + 
     labs(x = "", 
          y = "% samples w/ taxa") + 
     theme(title = element_text(size = 16, face = "bold"), 
           axis.title = element_text(size = 14), 
           axis.text = element_text(size = 12), 
-          axis.text.x = element_text(angle = 45, hjust = 1))
+          axis.text.x = element_text(angle = 45, hjust = 1), 
+          legend.position = "none")
+  
+  if(color){
+    top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = {{name}}))
+  } else {
+    top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity") 
+  }
+  
+  top_taxa_plot <- top_taxa_plot
 
   if(is.na(title)) { 
       top_taxa_plot <- top_taxa_plot + 
