@@ -22,13 +22,10 @@ fctLoad <- function(physeq,
   PC_col <- sym(paste0("PC", PCx)) 
   
   result <- load.df %>% 
+    filter(!is.na(CommonName)) %>%
     slice_max(order_by = abs(-!!PC_col), n = nTaxa) %>%
     relocate(CommonName, .after = asv) %>%
-    relocate(PC_col, .after = CommonName) %>%
-    mutate(CommonName = case_when(
-      is.na(CommonName) ~ lowestLevel, 
-      is.na(CommonName) ~ paste0("NA", row_number()), 
-      TRUE ~ CommonName))
+    relocate(PC_col, .after = CommonName)
   
   # Plot top nTaxa 
   plot <- result %>% 
