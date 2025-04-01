@@ -33,6 +33,21 @@ pcaPlot <- function(ps, # clr transformed and filtered data
   eigs <- pca$sdev^2
   varExplained <- 100 * eigs / sum(eigs)
   names(varExplained) <- paste0('PC', seq_along(varExplained))
+
+  # Create a scree table with eigenvalues, variance explained, and cumulative variance
+  scree.table <- data.frame(
+    PC = paste0("PC", seq_along(varExplained)),
+    Eigenvalue = eigs,
+    VarianceExplained = varExplained,
+    CumulativeVariance = cumsum(varExplained)
+  )
+  
+  # Generate a scree plot using ggplot2
+  scree.plot <- ggplot(scree_table, aes(x = as.numeric(gsub("PC", "", PC)), y = VarianceExplained)) +
+    geom_line() +
+    geom_point() +
+    labs(title = "Scree Plot", x = "Principal Component", y = "Variance Explained (%)") +
+    theme_classic()
   
   # Extract variance explained for specified PCs
   ve.xPC <- as.character(round(varExplained[paste0('PC', xPC)], 3))
@@ -167,6 +182,6 @@ pcaPlot <- function(ps, # clr transformed and filtered data
                       color = 'black', show.legend = FALSE)
   }
   
-  return(list(pca.df = pca.df, pca.biplot = pca.biplot, loadings = loadings))
+  return(list(pca.df = pca.df, pca.biplot = pca.biplot, loadings = loadings, scree.table = scree.table, scree.plot = scree.plot))
 }
 ```
