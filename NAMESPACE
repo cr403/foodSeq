@@ -1,7 +1,9 @@
 export(foodSeqSetup)
-export(PCAPlot) 
+export(pcaPlot) 
 
 import(tidyverse)
 import(phyloseq) 
 import(Biostrings)
 import(dada2)
+import(vegan) 
+import(paran) 
