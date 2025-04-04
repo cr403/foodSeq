@@ -21,73 +21,114 @@ psPerm <- function(physeq,
                    permutations = 1000,
                    strata = NULL,
                    seed = 123){
+  
   # Set seed for reproducibility
   set.seed(seed)
 
-  # Extract sam_data
-  samdf <- physeq@sam_data %>%
-    data.frame() 
+  # Extract sample data
+  samdf <- data.frame(sample_data(physeq))
+  message("Initial number of samples: ", nsamples(physeq))
   
-  # Extract predictors from equation parameter 
-  predictors <- all.vars(as.formula(paste("~", equation))) 
+  ################### Handle Predictor Variables ###################
   
-  # Ensure that all predictors exist in sample data 
+  # Extract predictors from equation
+  predictors <- all.vars(as.formula(paste("~", equation)))
+  
+  # Ensure predictors exist
   missing_predictors <- setdiff(predictors, colnames(samdf))
-  
-  if(length(missing_predictors) > 0) {
+  if (length(missing_predictors) > 0) {
     stop("The following variable(s) in the formula are not found in the sample data: ",
          paste(missing_predictors, collapse = ", "))
   }
   
-  # Identify rows with any missing values in predictor variables 
-  missing_samples <- samdf %>% 
+  # Check for missing predictor values
+  missing_samples <- samdf %>%
     select(all_of(predictors)) %>%
     apply(1, function(row) any(is.na(row)))
   
-  num_removed <- sum(missing_samples) 
+  num_removed <- sum(missing_samples)
   
-  # Drop samples with missing predictor variables 
-  if(num_removed > 0) {
-    warning(paste(num_removed, "samples removed due to missing values in:", 
-                  paste(predictors, collapse = " or "), 
-                  "\n"))
+  if (num_removed > 0) {
+    removed_ids <- rownames(samdf)[missing_samples]
+    warning(
+      paste(
+        num_removed, "samples removed due to missing values in", 
+        paste(predictors, collapse = " or "), "\n",
+        "Samples removed:", paste(removed_ids, collapse = ", "), "\n"
+      )
+    )
     
     # Prune those samples from the phyloseq object
     physeq <- prune_samples(!missing_samples, physeq)
   }
-
-  # Handle strata variable  
-  if(!is.null(strata)) {
-    if(!strata %in% colnames(samdf)) { 
+  
+  # Update samdf after pruning
+  samdf <- data.frame(sample_data(physeq))
+  message("Number of samples after missing predictor pruning: ", nsamples(physeq))
+  
+  ################### Handle strata variable ###################
+  
+  if (!is.null(strata)) {
+    if (!strata %in% colnames(samdf)) {
       stop("Strata variable '", strata, "' not found in sample data.")
     }
-    # Ensure that all strata groups have more than 1 sample 
-    strata_counts <- table(samdf[[strata]]) 
-    invalid_strata <- names(strata_counts[strata_counts < 2])
     
-    if(length(invalid_strata) > 0) {
-      warning(length(invalid_strata), " strata group(s) had <2 samples and will be removed: ",
-              paste(invalid_strata, collapse = ", "))
-      
-      keep_idx <- !(samdf[[strata]] %in% invalid_strata)
-      
-      # Prune those samples from phyloseq object 
-      physeq <- prune_samples(keep_idx, physeq)
+    # Remove samples with NA in strata
+    missing_strata <- is.na(samdf[[strata]])
+    num_removed_strata_na <- sum(missing_strata)
+    if (num_removed_strata_na > 0) {
+      removed_ids <- rownames(samdf)[missing_strata]
+      warning(
+        paste(
+          num_removed_strata_na, "samples removed due to missing values in", strata, "\n",
+          "Samples removed:", paste(removed_ids, collapse = ", "), "\n"
+        )
+      )
+      physeq <- prune_samples(!missing_strata, physeq)
+      samdf <- data.frame(sample_data(physeq))
     }
-  } 
-
-  samdf <- data.frame(sample_data(physeq)) # update samdf after all pruning 
+    
+    # Remove strata groups with < 2 samples
+    strata_counts <- table(samdf[[strata]])
+    invalid_strata <- names(strata_counts[strata_counts < 2])
+    if (length(invalid_strata) > 0) {
+      # Which samples will be removed?
+      remove_idx <- samdf[[strata]] %in% invalid_strata
+      removed_ids <- rownames(samdf)[remove_idx]
+      
+      warning(
+        paste(
+          length(invalid_strata), "sample(s) had <2 samples within strata and will be removed:",
+          paste(invalid_strata, collapse = ", "), "\n",
+          "Samples removed:", paste(removed_ids, collapse = ", "), "\n"
+        )
+      )
+      keep_idx <- !remove_idx
+      physeq <- prune_samples(keep_idx, physeq)
+      samdf <- data.frame(sample_data(physeq))
+    }
+  }
   
-  # Euclidean distance object
+  message("Number of samples after strata pruning: ", nsamples(physeq))
+  
+  ################### Run PERMANOVA ###################
+  
+  # Build distance object
   dist_obj <- phyloseq::distance(physeq, method = method)
   
-  # Construct formula as response ~ predictors 
-  form <- as.formula(paste("dist_obj ~", equation))
-  
-  # Run PERMANOVA
-  if(!is.null(strata)) { 
+  # Build formula: distance ~ predictors
+  form <- as.formula(paste("dist_obj ~", equation))  
+  if(!is.null(strata)) {
+    final_counts <- table(samdf[[strata]])
+    if(any(final_counts < 2)) {
+      stop("At least one stratum has <2 samples after all pruning. Cannot run PERMANOVA.")
+    }
+
+    if(nrow(samdf) < 2) {
+      stop("Fewer than 2 samples remain after pruning. Cannot run PERMANOVA")
+    }
     adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations, strata = samdf[[strata]])
   } else {
-  adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations) 
+  adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations)
   }
 }
