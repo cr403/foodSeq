@@ -3,7 +3,7 @@ library(phyloseq)
 library(tidyverse) 
 
 psPerm <- function(physeq, 
-                   equation, # e.g., "country + age + treatment"
+                   equation, # e.g., "country + age + treatment" or "country*age + bmi"
                    method = "euclidean", 
                    by = "terms",
                    permutations = 1000){
