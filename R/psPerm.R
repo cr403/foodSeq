@@ -15,7 +15,7 @@ library(tidyverse)
 # other words, using `by = "margin"`, predictors are tested while controlling for all other variables in the equation. 
 
 psPerm <- function(physeq, 
-                   equation, # e.g., "country + age + treatment"
+                   equation, # e.g., "country + age + treatment" or "country*age + treatment"
                    method = "euclidean", 
                    by = "terms",
                    permutations = 1000,
