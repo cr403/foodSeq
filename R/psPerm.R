@@ -15,10 +15,14 @@ library(tidyverse)
 # other words, using `by = "margin"`, predictors are tested while controlling for all other variables in the equation. 
 
 psPerm <- function(physeq, 
-                   equation, # e.g., "country + age + treatment" or "country*age + bmi"
+                   equation, # e.g., "country + age + treatment"
                    method = "euclidean", 
                    by = "terms",
-                   permutations = 1000){
+                   permutations = 1000,
+                   strata = NULL,
+                   seed = 123){
+  # Set seed for reproducibility
+  set.seed(seed)
 
   # Extract sam_data
   samdf <- physeq@sam_data %>%
@@ -50,15 +54,40 @@ psPerm <- function(physeq,
     
     # Prune those samples from the phyloseq object
     physeq <- prune_samples(!missing_samples, physeq)
-    samdf <- samdf[!missing_samples, , drop = FALSE]
   }
+
+  # Handle strata variable  
+  if(!is.null(strata)) {
+    if(!strata %in% colnames(samdf)) { 
+      stop("Strata variable '", strata, "' not found in sample data.")
+    }
+    # Ensure that all strata groups have more than 1 sample 
+    strata_counts <- table(samdf[[strata]]) 
+    invalid_strata <- names(strata_counts[strata_counts < 2])
+    
+    if(length(invalid_strata) > 0) {
+      warning(length(invalid_strata), " strata group(s) had <2 samples and will be removed: ",
+              paste(invalid_strata, collapse = ", "))
+      
+      keep_idx <- !(samdf[[strata]] %in% invalid_strata)
+      
+      # Prune those samples from phyloseq object 
+      physeq <- prune_samples(keep_idx, physeq)
+    }
+  } 
+
+  samdf <- data.frame(sample_data(physeq)) # update samdf after all pruning 
   
-  # Euclidean distance matrix
-  trnL_dist_run <- as.data.frame(as.matrix(phyloseq::distance(physeq, method = method)))
+  # Euclidean distance object
+  dist_obj <- phyloseq::distance(physeq, method = method)
   
   # Construct formula as response ~ predictors 
-  form <- as.formula(paste("trnL_dist_run ~", equation)) 
+  form <- as.formula(paste("dist_obj ~", equation))
   
-  # Run PERMANOVA 
-  adonis2(form, by = by, data = samdf, method = method, permutations = permutations) 
+  # Run PERMANOVA
+  if(!is.null(strata)) { 
+    adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations, strata = samdf[[strata]])
+  } else {
+  adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations) 
+  }
 }
