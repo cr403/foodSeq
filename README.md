@@ -1,2 +1,2 @@
 # FoodSeq Functions
-Repository of custom functions used for FoodSeq 
+Repository of functions used for FoodSeq 
