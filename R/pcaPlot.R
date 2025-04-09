@@ -43,7 +43,7 @@ pcaPlot <- function(ps, # clr transformed and filtered data
   )
   
   # Generate a scree plot using ggplot2
-  scree.plot <- ggplot(scree_table, aes(x = as.numeric(gsub("PC", "", PC)), y = VarianceExplained)) +
+  scree.plot <- ggplot(scree.table, aes(x = as.numeric(gsub("PC", "", PC)), y = VarianceExplained)) +
     geom_line() +
     geom_point() +
     labs(title = "Scree Plot", x = "Principal Component", y = "Variance Explained (%)") +
@@ -182,6 +182,11 @@ pcaPlot <- function(ps, # clr transformed and filtered data
                       color = 'black', show.legend = FALSE)
   }
   
-  return(list(pca.df = pca.df, pca.biplot = pca.biplot, loadings = loadings, scree.table = scree.table, scree.plot = scree.plot))
+  return(list(pca.df = pca.df, 
+              pca.biplot = pca.biplot, 
+              loadings = loadings, 
+              pca.output = pca,
+              scree.table = scree.table, 
+              scree.plot = scree.plot))
 }
 ```
