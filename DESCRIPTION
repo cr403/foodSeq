@@ -1,0 +1,16 @@
+Package: foodSeq
+Title: Useful functions for FoodSeq Analysis
+Version: 0.0.0.9000
+Authors@R: 
+    person("Caroline", "Rivera", , "caroline.rivera@duke.edu", role = c("aut", "cre"))
+Description: A collection of helper functions to support the analysis of dietary DNA data 
+    generated using the FoodSeq method. Includes tools for cleaning, transforming, 
+    visualizing, and interpreting plant-based amplicon sequence data such as trnL. 
+    Designed for applications in dietary diversity research, global nutrition studies, 
+    and phylogenetic ecology.
+License: MIT
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+URL: https://github.com/cr403/foodSeq
+Depends: R (>= 4.1.0) 
