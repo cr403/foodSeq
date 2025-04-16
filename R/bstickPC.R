@@ -8,6 +8,7 @@
 #' @param pcaOutput object assigned to output of pcaPlot()
 #'
 #' @return scree plot from pcaPlot() with dotted red line indicating suggested importance cutoff
+#'
 #' @export
 bstickPC <- function(pcaOutput # object assigned to output of pcaPlot()
 ){
