@@ -20,7 +20,7 @@ Imports:
 	future.apply,
 	vegan,
 	ggridges,
-	ggpsmic,
+	ggpmisc,
 	microbiome,
 	dplyr,
 	scales
