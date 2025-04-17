@@ -24,4 +24,4 @@ Imports:
 	microbiome,
 	dplyr,
 	scales
-	
+Additional_repositories: https://bioconductor.org/packages/release/bioc

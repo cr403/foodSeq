@@ -1,35 +1,30 @@
----
-output: github_document
----
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
 
 # foodSeq
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of foodSeq is to ...
+The goal of foodSeq is to …
 
 ## Installation
 
 You can install the development version of foodSeq like so:
 
-``` {r}
+``` r
 # 1. Install bioconductor and devtools if needed
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager") 
+# This package depends on Bioconductor packages (phyloseq, microbiome) 
+if (!requireNamespace("BiocManager", quietly = TRUE)){
+  install.packages("BiocManager")
+}
 
-install.packages("devtools") 
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+
+library(devtools)
+library(BiocManager) 
 
 # 2. Install the package
 devtools:install_github("cr403/foodSeq") 
@@ -37,4 +32,3 @@ devtools:install_github("cr403/foodSeq")
 # 3. Load library
 library(foodSeq)
 ```
-
