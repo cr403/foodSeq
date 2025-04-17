@@ -2,9 +2,7 @@
 % Please edit documentation in R/pcaPlot.R
 \name{pcaPlot}
 \alias{pcaPlot}
-\title{\subsection{PCA plot and biplot
-Code written by Ben, adapted by Caroline}{
-}}
+\title{PCA plot and biplot}
 \usage{
 pcaPlot(
   ps,

@@ -1,9 +1,6 @@
-#' --------------------
-#' Factor Loading Analysis
-#' Code written by Caroline
-#' --------------------
+#' @title Factor Loading Analysis
 #'
-#' This function generates factor loading plots.
+#' @description This function generates factor loading plots.
 #'
 #' @param physeq clr filtered phyloseq object on which pcaPlot() was run
 #' @param pca_output output object from pcaPlot()

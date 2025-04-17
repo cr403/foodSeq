@@ -1,9 +1,7 @@
-#' --------------------
-#' PCA plot and biplot
-#' Code written by Ben, adapted by Caroline
-#' --------------------
 #'
-#' This function runs a Principal Component Analysis.
+#' @title PCA plot and biplot
+#'
+#' @description This function runs a Principal Component Analysis.
 #'
 #' @param ps clr transformed and filtered data
 #' @param colorVar variable from samdf to color samples by

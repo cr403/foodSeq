@@ -1,9 +1,6 @@
-#' --------------------
-#' Broken stick analysis
-#' Code written by Caroline
-#' --------------------
+#' @title Broken stick analysis
 #'
-#' This code runs Broken Stick method for Principal Component selection
+#' @description This code runs Broken Stick method for Principal Component selection
 #'
 #' @param pcaOutput object assigned to output of pcaPlot()
 #'

@@ -1,9 +1,6 @@
-#' --------------------
-#' Elbow Method
-#' Code written by Caroline
-#' --------------------
+#' @title Elbow Method
 #'
-#' This function performs Elbow Method for Principal Component importance
+#' @description This function performs Elbow Method for Principal Component importance
 #'
 #' @param pcaOutput object assigned to the output of pcaPlot()
 #'

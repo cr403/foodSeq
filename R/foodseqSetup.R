@@ -1,9 +1,6 @@
-#' --------------------
-#' FoodSeq Setup Pipeline
-#' Code written by Caroline
-#' --------------------
+#' @title FoodSeq Setup Pipeline
 #'
-#' This function runs raw phyloseq object through typical inital processing steps.
+#' @description This function runs raw phyloseq object through typical inital processing steps.
 #'
 #' @param physeq raw phyloseq object
 #' @param amplicon trnl or 12s
