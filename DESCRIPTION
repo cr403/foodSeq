@@ -18,5 +18,10 @@ Imports:
 	tidyverse,
 	phyloseq,
 	future.apply,
-	vegan
+	vegan,
+	ggridges,
+	ggpsmic,
+	microbiome,
+	dplyr,
+	scales
 	
