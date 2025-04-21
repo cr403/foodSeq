@@ -19,7 +19,8 @@ top_n_taxa <- function(physeq,
   name = ShortName, # dynamically pass in the name of the common name column to use
   title = NA,
   remNA = FALSE, # option to keep/remove taxa that don't have common name assignment
-  color = TRUE # option to add/remove color to graph
+  color = TRUE, # option to add/remove color to graph
+  ylim100 = FALSE # option to make ylim = (0,100)
 ){
 
   ps <- physeq
@@ -55,7 +56,6 @@ top_n_taxa <- function(physeq,
   top_taxa_plot <- top_taxa %>%
     ggplot(aes(x = lowestLevel, y = prevalence)) +
     # geom_bar(stat = "identity") +
-    ylim(0,100) +
     coord_flip() +
     labs(x = "",
          y = "% samples w/ taxa") +
@@ -65,7 +65,13 @@ top_n_taxa <- function(physeq,
           axis.text.x = element_text(angle = 45, hjust = 1),
           legend.position = "none")
 
-  if(color){
+  if (ylim100) {
+    top_taxa_plot <- top_taxa_plot + ylim(0,100)
+  } else {
+    top_taxa_plot <- top_taxa_plot
+    }
+
+  if (color) {
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = {{name}}))
   } else {
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
