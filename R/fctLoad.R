@@ -17,7 +17,7 @@ fctLoad <- function(physeq,
                     nTaxa = 10){
 
   # Extract taxa information
-  taxtab <- ps.plot@tax_table %>%
+  taxtab <- physeq@tax_table %>%
     data.frame() %>%
     rownames_to_column(var = "asv") %>%
     mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom))
