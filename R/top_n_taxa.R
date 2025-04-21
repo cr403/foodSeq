@@ -55,6 +55,7 @@ top_n_taxa <- function(physeq,
   top_taxa_plot <- top_taxa %>%
     ggplot(aes(x = lowestLevel, y = prevalence)) +
     # geom_bar(stat = "identity") +
+    ylim(0,100) +
     coord_flip() +
     labs(x = "",
          y = "% samples w/ taxa") +
