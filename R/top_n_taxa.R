@@ -80,5 +80,5 @@ top_n_taxa <- function(physeq,
       labs(title = title)
   }
 
-  return(list(top_taxa, top_taxa_plot))
+  return(list(df = top_taxa, plot = top_taxa_plot))
 }
