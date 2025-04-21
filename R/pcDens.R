@@ -10,6 +10,7 @@
 #' @param alpha = 0.7
 #' @param title.size = 14
 #' @param text.size = 12
+#' @param customColors optional color palette inclusion
 #'
 #' @return density plot
 #'
@@ -21,9 +22,10 @@ pcDens <- function(data, # pcaPlot() output
                    scale = 2,
                    alpha = 0.7,
                    title.size = 14,
-                   text.size = 12
+                   text.size = 12,
+                   customColors = NULL
 ){
-  data$pca.df %>%
+  plot <- data$pca.df %>%
     data.frame() %>%
     ggplot(aes(x = .data[[x]], y = fct_reorder(.data[[y]], -.data[[x]]), fill = .data[[y]])) +
     ggridges::geom_density_ridges(scale = 2, alpha = 0.7) +
@@ -32,4 +34,12 @@ pcDens <- function(data, # pcaPlot() output
           axis.text = element_text(size = 12),
           axis.title.y = element_blank(),
           legend.position = "none")
+
+  if (!is.null(customColors)) {
+    plot <- plot + ggplot2::scale_color_manual(values = customColors)
+  } else {
+    plot <- plot
+  }
+
+  return(plot)
 }
