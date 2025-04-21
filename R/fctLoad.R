@@ -32,14 +32,14 @@ fctLoad <- function(physeq,
   PC_col <- sym(paste0("PC", PCx))
 
   result <- load.df %>%
-    filter(!is.na(CommonName)) %>%
+    filter(!is.na(ShortName)) %>%
     slice_max(order_by = abs(-!!PC_col), n = nTaxa) %>%
-    relocate(CommonName, .after = asv) %>%
-    relocate(PC_col, .after = CommonName)
+    relocate(ShortName, .after = asv) %>%
+    relocate(PC_col, .after = ShortName)
 
   # Plot top nTaxa
   plot <- result %>%
-    ggplot(aes(x = fct_reorder(CommonName, !!PC_col), y = !!PC_col)) +
+    ggplot(aes(x = fct_reorder(ShortName, !!PC_col), y = !!PC_col)) +
     geom_bar(stat = "identity") +
     coord_flip() +
     theme(axis.title = element_text(size = 16, face = "bold"),
