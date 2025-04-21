@@ -126,8 +126,8 @@ psPerm <- function(physeq,
     if(nrow(samdf) < 2) {
       stop("Fewer than 2 samples remain after pruning. Cannot run PERMANOVA")
     }
-    adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations, strata = samdf[[strata]])
+    vegan::adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations, strata = samdf[[strata]])
   } else {
-    adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations)
+    vegan::adonis2(formula = form, by = by, data = samdf, method = method, permutations = permutations)
   }
 }
