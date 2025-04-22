@@ -109,43 +109,47 @@ foodseqSetup <- function(physeq,
       dplyr::filter(species == "Homo sapiens") %>%
       pull(asv)
 
-    total_reads <- ps@otu_table %>%
-      data.frame() %>%
-      rownames_to_column(var = "sample") %>%
-      pivot_longer(-sample, names_to = "asv") %>%
-      group_by(sample) %>%
-      summarise(total_reads = sum(value, na.rm = TRUE))
+    if(is.null(nrow(human_asvs))){
+      warning("This phyloseq object has 0 human reads")
+    } else {
+      total_reads <- ps@otu_table %>%
+        data.frame() %>%
+        rownames_to_column(var = "sample") %>%
+        pivot_longer(-sample, names_to = "asv") %>%
+        group_by(sample) %>%
+        summarise(total_reads = sum(value, na.rm = TRUE))
 
-    human_reads <- ps@otu_table %>%
-      data.frame() %>%
-      rownames_to_column(var = "sample") %>%
-      pivot_longer(-sample, names_to = "asv") %>%
-      dplyr::filter(asv %in% human_asvs) %>%
-      group_by(sample) %>%
-      summarise(human_reads = sum(value, na.rm = TRUE))
+      human_reads <- ps@otu_table %>%
+        data.frame() %>%
+        rownames_to_column(var = "sample") %>%
+        pivot_longer(-sample, names_to = "asv") %>%
+        dplyr::filter(asv %in% human_asvs) %>%
+        group_by(sample) %>%
+        summarise(human_reads = sum(value, na.rm = TRUE))
 
-    human_percent <- total_reads %>%
-      left_join(human_reads, by = "sample") %>%
-      mutate(human_reads_percent = human_reads/total_reads*100) %>%
-      select(sample, human_reads, human_reads_percent)
+      human_percent <- total_reads %>%
+        left_join(human_reads, by = "sample") %>%
+        mutate(human_reads_percent = human_reads/total_reads*100) %>%
+        select(sample, human_reads, human_reads_percent)
 
-    sample_data(ps) <- ps@sam_data %>%
-      data.frame() %>%
-      rownames_to_column(var = "sample") %>%
-      left_join(human_percent, by = "sample") %>%
-      column_to_rownames(var = "sample") %>%
-      sample_data()
+      sample_data(ps) <- ps@sam_data %>%
+        data.frame() %>%
+        rownames_to_column(var = "sample") %>%
+        left_join(human_percent, by = "sample") %>%
+        column_to_rownames(var = "sample") %>%
+        sample_data()
 
-    # Calculate and print % human reads
-    total_human_reads <- ps %>%
-      subset_taxa(species == "Homo sapiens") %>%
-      sample_sums()
+      # Calculate and print % human reads
+      total_human_reads <- ps %>%
+        subset_taxa(species == "Homo sapiens") %>%
+        sample_sums()
+
+      percent_human_reads <- round((sum(total_human_reads)/sum(total_reads))*100, 2)
+
+      print(paste0(percent_human_reads, "% reads were assigned to Homo sapien"))
+    }
 
     total_reads <- sample_sums(ps)
-
-    percent_human_reads <- round((sum(total_human_reads)/sum(total_reads))*100, 2)
-
-    print(paste0(percent_human_reads, "% reads were assigned to Homo sapien"))
 
     # Glom animals
     tax_table(ps) <- ps@tax_table %>%
