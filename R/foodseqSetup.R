@@ -69,8 +69,18 @@ foodseqSetup <- function(physeq,
     ps@sam_data[rownames(ps.filt.clr@sam_data)[matching_samples], "pMR"] <- ps.filt.clr@sam_data$pMR
 
     # Shannon Index
-    shannon <- estimate_richness(ps, split = TRUE, measures = "Shannon")
+    shannon <- estimate_richness(ps, split = TRUE, measures = "Shannon") %>%
+      rownames_to_column(var = "samid")
     ps@sam_data$Shannon_diversity_plants <- shannon$Shannon
+
+    sample_data(ps.filt.clr) <- ps.filt.clr@sam_data %>%
+      data.frame() %>%
+      rownames_to_column(var = "samid") %>%
+      left_join(shannon, by = "samid") %>%
+      mutate(Shannon = ifelse(is.na(Shannon), 0, Shannon)) %>%
+      rename(Shannon_diversity_plants = Shannon) %>%
+      column_to_rownames(var = "samid") %>%
+      sample_data()
   }
 
   # 12SV5
