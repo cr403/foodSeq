@@ -162,7 +162,7 @@ foodseqSetup <- function(physeq,
         ungroup()  %>% # Remove grouping
         select(asv, common_name)
 
-      tax_table(tsv5) <- tsv5@tax_table %>%
+      tax_table(ps) <- ps@tax_table %>%
         data.frame() %>%
         rownames_to_column(var = "asv") %>%
         left_join(result, by = "asv") %>%
