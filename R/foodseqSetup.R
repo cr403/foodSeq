@@ -5,6 +5,7 @@
 #' @param physeq raw phyloseq object
 #' @param amplicon trnl or 12s
 #' @param collapse optional to run collapseNoMismatch()
+#' @param optional space to add common names file
 #'
 #' @return ps.raw = phyloseq object with no changes from physeq other than adding p/aMR, Shannon, and reads to samdf (no NA/human reads removed)
 #' @return ps = phyloseq object wiht no changes from physeq other than changes to ps.raw + animals glommed
@@ -14,7 +15,8 @@
 #' @export
 foodseqSetup <- function(physeq,
                          amplicon = "",
-                         collapse = FALSE){
+                         collapse = FALSE,
+                         CommonNames = NULL){
   ps <- physeq
   amplicon <- tolower(amplicon) # change casing for matching
 
@@ -53,6 +55,17 @@ foodseqSetup <- function(physeq,
       print(paste("Taxa Collapsed: ", before_collapse[2] - after_collapse[2]))
 
       otu_table(ps) <- otu_table(seqtab.merged, taxa_are_rows = FALSE) # Add back OTU table to ps
+    }
+
+    # Add common names -- this is based on the old common names file that is a 1-to-1 match for ASV's
+    if(!is.null(CommonNames)) {
+      tax_table(ps) <- ps@tax_table %>%
+        data.frame() %>%
+        rownames_to_column(var = "asv") %>%
+        left_join(CommonNames, by = "asv") %>%
+        column_to_rownames(var = "asv") %>%
+        as.matrix() %>%
+        tax_table()
     }
 
     # Relative Abundance
@@ -102,6 +115,62 @@ foodseqSetup <- function(physeq,
       as.matrix() %>%
       tax_table()
 
+    # Add common names -- this is based on Ashish's new 12SV5 common names file
+    if (!is.null(CommonNames)) {
+      taxtab <- ps@tax_table %>%
+        data.frame() %>%
+        rownames_to_column(var = "asv")
+
+      cols <- c("species", "genus", "family", "order", "class", "phylum", "kingdom")
+
+      taxtab <- taxtab %>%
+        mutate(
+          scientific_name = trimws(coalesce(species, genus, family, order, class, phylum, kingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
+        ) %>%
+        select(asv, any_of(cols))
+
+      animalnames <- CommonNames %>%
+        dplyr::rename(scientific_name = name) %>%
+        dplyr::select(scientific_name, common_name)
+
+      df <- left_join(taxtab, animalnames, by = join_by(scientific_name))
+
+      result <- df %>%
+        group_by(asv) %>%
+        summarize(
+          # Find the most specific common taxonomic classification
+          name = {
+            ranks <- c("species", "genus", "family", "order", "class", "phylum", "kingdom")  # Specific to general
+            common_rank <- ranks[sapply(ranks, function(rank) {
+              # Exclude NA and check if all remaining values are identical
+              values <- na.omit(cur_data()[[rank]])
+              length(unique(values)) == 1
+            })][1]
+
+            if (!is.null(common_rank) && !is.na(common_rank)) {
+              # Return the single shared value for the rank
+              unique(na.omit(cur_data()[[common_rank]]))
+            } else {
+              NA_character_  # If no common rank is found, return NA
+            }
+          },
+          # Concatenate scientific names
+          taxon = paste(unique(scientific_name), collapse = "; "),
+          # Concatenate common names
+          common_name = paste(na.omit(unique(common_name)), collapse = "; ")
+        ) %>%
+        ungroup()  %>% # Remove grouping
+        select(asv, common_name)
+
+      tax_table(tsv5) <- tsv5@tax_table %>%
+        data.frame() %>%
+        rownames_to_column(var = "asv") %>%
+        left_join(result, by = "asv") %>%
+        column_to_rownames(var = "asv") %>%
+        as.matrix() %>%
+        tax_table()
+    }
+
     # Add human_percent to sam_data for each individual
     human_asvs <- ps@tax_table %>%
       data.frame() %>%
@@ -111,8 +180,9 @@ foodseqSetup <- function(physeq,
 
     if(is.null(nrow(human_asvs))){
       warning(paste0("This phyloseq object has 0 human reads. This is highly suspicious.", "\n",
-                     "Results of any subsequent CLR-filtering are unreliable.", "\n",
-                     "All reads (human/non-foods and NA) are neeed for proper transformation", "\n", "\n"))
+                     "Results of any subsequent CLR trasnformation results are unreliable.", "\n",
+                     "All reads (human/non-foods and NA) are neeed for proper transformation", "\n",
+                     "I recommend using the full phyloseq object.", "\n", "\n"))
     } else {
       total_reads <- ps@otu_table %>%
         data.frame() %>%
