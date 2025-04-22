@@ -162,11 +162,14 @@ foodseqSetup <- function(physeq,
         ungroup()  %>% # Remove grouping
         select(asv, common_name)
 
+      cols <- c("species", "genus", "family", "order", "class", "phylum", "kingdom", "common_name", "lowestLevel")
+
       tax_table(ps) <- ps@tax_table %>%
         data.frame() %>%
         rownames_to_column(var = "asv") %>%
         left_join(result, by = "asv") %>%
         column_to_rownames(var = "asv") %>%
+        select(any_of(cols)) %>%
         as.matrix() %>%
         tax_table()
     }
@@ -183,6 +186,9 @@ foodseqSetup <- function(physeq,
                      "Results of any subsequent CLR trasnformation results are unreliable.", "\n",
                      "All reads (human/non-foods and NA) are neeed for proper transformation", "\n",
                      "I recommend using the full phyloseq object.", "\n", "\n"))
+
+      print(paste("output of nrow(human_asvs): ", nrow(human_asvs)))
+
     } else {
       total_reads <- ps@otu_table %>%
         data.frame() %>%
@@ -227,6 +233,7 @@ foodseqSetup <- function(physeq,
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
       mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, kingdom)) %>%
+      dplyr::relocate(lowestLevel, .before = common_name) %>%
       as.matrix() %>%
       tax_table()
 
