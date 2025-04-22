@@ -187,13 +187,12 @@ foodseqSetup <- function(physeq,
                      "All reads (human/non-foods and NA) are neeed for proper transformation", "\n",
                      "I recommend using the full phyloseq object.", "\n", "\n"))
 
-      print(paste("output of nrow(human_asvs): ", nrow(human_asvs)))
-
     } else {
       total_reads <- ps@otu_table %>%
         data.frame() %>%
         rownames_to_column(var = "sample") %>%
         pivot_longer(-sample, names_to = "asv") %>%
+        mutate(value = as.numeric(value)) %>% # ensure numeric
         group_by(sample) %>%
         summarise(total_reads = sum(value, na.rm = TRUE))
 
@@ -201,6 +200,7 @@ foodseqSetup <- function(physeq,
         data.frame() %>%
         rownames_to_column(var = "sample") %>%
         pivot_longer(-sample, names_to = "asv") %>%
+        mutate(value = as.numeric(value)) %>% # ensure numeric
         dplyr::filter(asv %in% human_asvs) %>%
         group_by(sample) %>%
         summarise(human_reads = sum(value, na.rm = TRUE))
