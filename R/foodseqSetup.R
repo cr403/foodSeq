@@ -110,7 +110,9 @@ foodseqSetup <- function(physeq,
       pull(asv)
 
     if(is.null(nrow(human_asvs))){
-      warning(paste0("This phyloseq object has 0 human reads", "\n", "\n"))
+      warning(paste0("This phyloseq object has 0 human reads. This is highly suspicious.", "\n",
+                     "Results of any subsequent CLR-filtering are unreliable.", "\n",
+                     "All reads (human/non-foods and NA) are neeed for proper transformation", "\n", "\n"))
     } else {
       total_reads <- ps@otu_table %>%
         data.frame() %>%
