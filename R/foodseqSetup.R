@@ -18,6 +18,16 @@ foodseqSetup <- function(physeq,
   ps <- physeq
   amplicon <- tolower(amplicon) # change casing for matching
 
+  # ensure that colnames(tax_table) are all lowercase
+  taxdf <- physeq@tax_table %>%
+    data.frame()
+
+  colnames(taxdf) <- tolower(colnames(taxdf))
+
+  tax_table(physeq) <- taxdf %>%
+    as.matrix() %>%
+    tax_table()
+
   # Initializes sample data if you're working with raw phyloseq
   if(is.null(ps@sam_data)) {
     ids <- sample_names(ps)
