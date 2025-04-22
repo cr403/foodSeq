@@ -68,6 +68,13 @@ foodseqSetup <- function(physeq,
         tax_table()
     }
 
+    # Add lowestLevel
+    tax_table(ps) <- ps@tax_table %>%
+      data.frame() %>%
+      mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom)) %>%
+      as.matrix() %>%
+      tax_table()
+
     # Relative Abundance
     ps.ra <- transform_sample_counts(ps, function(x){x/sum(x)})
 
@@ -182,7 +189,7 @@ foodseqSetup <- function(physeq,
       pull(asv)
 
     if(length(human_asvs) == 0){
-      warning(paste0("\n", "This phyloseq object has 0 human reads. This is highly suspicious.", "\n",
+      warning(paste0("\n", "\n", "This phyloseq object has 0 human reads. This is highly suspicious.", "\n",
                      "Results of any subsequent CLR trasnformation results are unreliable.", "\n",
                      "All reads (human/non-foods and NA) are neeed for proper transformation", "\n",
                      "I recommend using the full phyloseq object.", "\n", "\n"))
@@ -224,7 +231,7 @@ foodseqSetup <- function(physeq,
 
       percent_human_reads <- round((sum(total_human_reads)/sum(total_reads$total_reads))*100, 2)
 
-      print(paste0("\n", percent_human_reads, "% reads were assigned to Homo sapien"))
+      print(paste0(percent_human_reads, "% reads were assigned to Homo sapien"))
     }
 
     total_reads <- sample_sums(ps)
