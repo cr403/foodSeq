@@ -19,12 +19,12 @@ foodseqSetup <- function(physeq,
   amplicon <- tolower(amplicon) # change casing for matching
 
   # ensure that colnames(tax_table) are all lowercase
-  taxdf <- physeq@tax_table %>%
+  taxdf <- ps@tax_table %>%
     data.frame()
 
   colnames(taxdf) <- tolower(colnames(taxdf))
 
-  tax_table(physeq) <- taxdf %>%
+  tax_table(ps) <- taxdf %>%
     as.matrix() %>%
     tax_table()
 
