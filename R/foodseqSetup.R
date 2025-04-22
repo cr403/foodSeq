@@ -222,7 +222,7 @@ foodseqSetup <- function(physeq,
         subset_taxa(species == "Homo sapiens") %>%
         sample_sums()
 
-      percent_human_reads <- round((sum(total_human_reads)/sum(total_reads))*100, 2)
+      percent_human_reads <- round((sum(total_human_reads)/sum(total_reads$total_reads))*100, 2)
 
       print(paste0(percent_human_reads, "% reads were assigned to Homo sapien"))
     }
