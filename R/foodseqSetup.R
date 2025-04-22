@@ -127,7 +127,7 @@ foodseqSetup <- function(physeq,
         mutate(
           scientific_name = trimws(coalesce(species, genus, family, order, class, phylum, kingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
         ) %>%
-        select(asv, any_of(cols))
+        select(asv, scientific_name, any_of(cols))
 
       animalnames <- CommonNames %>%
         dplyr::rename(scientific_name = name) %>%
