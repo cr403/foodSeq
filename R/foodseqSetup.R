@@ -162,7 +162,7 @@ foodseqSetup <- function(physeq,
         ungroup()  %>% # Remove grouping
         select(asv, common_name)
 
-      cols <- c("species", "genus", "family", "order", "class", "phylum", "kingdom", "common_name", "lowestLevel")
+      cols <- c("kingdom", "phylum", "class", "order", "family", "genus", "species","common_name")
 
       tax_table(ps) <- ps@tax_table %>%
         data.frame() %>%
@@ -181,7 +181,7 @@ foodseqSetup <- function(physeq,
       dplyr::filter(species == "Homo sapiens") %>%
       pull(asv)
 
-    if(is.null(nrow(human_asvs))){
+    if(length(human_asvs) == 0){
       warning(paste0("This phyloseq object has 0 human reads. This is highly suspicious.", "\n",
                      "Results of any subsequent CLR trasnformation results are unreliable.", "\n",
                      "All reads (human/non-foods and NA) are neeed for proper transformation", "\n",
