@@ -233,11 +233,16 @@ foodseqSetup <- function(physeq,
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
       mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, kingdom)) %>%
-      dplyr::relocate(lowestLevel, .before = common_name) %>%
       as.matrix() %>%
       tax_table()
 
     ps.glom <- tax_glom(ps, taxrank = "lowestLevel")
+
+    tax_table(ps.glom) <- ps.glom@tax_table %>%
+      data.frame() %>%
+      relocate(common_name, .after = everything()) %>%
+      as.matrix() %>%
+      tax_table()
 
     # Relative Abundance
     ps.ra <- transform_sample_counts(ps.glom, function(x){x/sum(x)})
@@ -259,7 +264,7 @@ foodseqSetup <- function(physeq,
       rowSums()
     ps.noHuman@sam_data$aMR <- aMR
 
-    ps@sam_data$pMR <- 0 # initialize aMR variable in ps
+    ps@sam_data$aMR <- 0 # initialize aMR variable in ps
     matching_samples <- rownames(ps.noHuman@sam_data) %in% rownames(ps@sam_data)
     ps@sam_data[rownames(ps.noHuman@sam_data)[matching_samples], "aMR"] <- ps.noHuman@sam_data$aMR[matching_samples]
 
