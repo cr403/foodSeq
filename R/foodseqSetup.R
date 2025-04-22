@@ -108,7 +108,8 @@ foodseqSetup <- function(physeq,
       rownames_to_column(var = "samid") %>%
       left_join(shannon, by = "samid") %>%
       mutate(Shannon = ifelse(is.na(Shannon), 0, Shannon)) %>%
-      rename(Shannon_diversity_plants = Shannon) %>%
+      select(-Shannon_diversity_plants) %>%
+      dplyr::rename(Shannon_diversity_plants = Shannon) %>%
       column_to_rownames(var = "samid") %>%
       sample_data()
   }
