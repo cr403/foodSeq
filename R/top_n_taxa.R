@@ -71,7 +71,7 @@ top_n_taxa <- function(physeq,
   }
 
   # Add taxonomy labels
-  top_taxa <- top_taxa %>%
+  top_taxa <- taxtab %>%
     left_join(seqtab, by = "asv") %>%
     mutate(label = coalesce(.data[[name]], species, genus, family, order, class, phylum, superkingdom),
            label = case_when(
