@@ -46,7 +46,7 @@ top_n_taxa <- function(physeq,
     seqtab <- seqtab.pa %>%
       left_join(samdf, by = "samid") %>%
       group_by(asv, .data[[facet]]) %>%
-      summarise(prevalence = sum(presence) / n_distince(samid) * 100, .groups = "drop")
+      summarise(prevalence = sum(presence) / n_distinct(samid) * 100, .groups = "drop")
 
   } else {
     # Calculate prevalence globally
