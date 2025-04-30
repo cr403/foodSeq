@@ -11,7 +11,7 @@
 You can install the development version of foodSeq like so:
 
 This chunk will be for future use when I can actually push to my github
-rip
+rip :(
 
 ``` r
 # # 1. Install bioconductor and devtools if needed
@@ -57,3 +57,6 @@ It’s commented out here so that the Rmd file will knit.
 # devtools::install("~/Library/CloudStorage/Box-Box/project_davidlab/LAD_LAB_Personnel/Caroline_R/10_Repo/foodSeq")
 # library(foodSeq)
 ```
+
+ahh im having issues with loading Rmd and md files bc they got out of
+sync
