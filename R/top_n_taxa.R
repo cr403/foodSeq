@@ -88,12 +88,12 @@ top_n_taxa <- function(physeq,
   # Plot
   if (!is.null(facet)) {
     top_taxa_plot <- top_taxa %>%
-      ggplot(aes(x = tidytext::reorder_within(label, prevalence, .data[[facet]]), y = prevalence)) +
+      ggplot(aes(x = tidytext::reorder_within(label, rank, .data[[facet]]), y = prevalence)) +
       facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow) +
       tidytext::scale_x_reordered()
   } else {
     top_taxa_plot <- top_taxa %>%
-      ggplot(aes(x = fct_reorder(label, prevalence), y = prevalence))
+      ggplot(aes(x = fct_reorder(label, rank), y = prevalence))
   }
 
   top_taxa_plot <- top_taxa_plot +
@@ -116,12 +116,12 @@ top_n_taxa <- function(physeq,
   if (color) {
     if (!is.null(facet)) {
       if (colorGlobal) {
-        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = rank))
+        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, rank, .data[[facet]])))
       } else {
-        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
+        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = rank))
       }
     } else {
-      top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
+      top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, rank)))
     }
   } else {
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
