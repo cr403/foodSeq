@@ -5,6 +5,7 @@
 #' @param physeq phyloseq object
 #' @param n number of taxa to plot
 #' @param name name of common name column (e.g., ShortName)
+#' @param labWidth character length for string breakpoints (used for long labels)
 #' @param title optional title
 #' @param remNA option to keep/remove taxa that don't have common name assignment
 #' @param color option to add/remove color to the graph
@@ -18,6 +19,7 @@
 top_n_taxa <- function(physeq,
   n = 10,
   name = "ShortName", # dynamically pass in the name of the common name column to use
+  labWidth = 20, # character length for string breakpoints
   title = NA,
   remNA = FALSE, # option to keep/remove taxa that don't have common name assignment
   color = TRUE, # option to add/remove color to graph
@@ -82,7 +84,8 @@ top_n_taxa <- function(physeq,
            label = case_when(
              is.na(label) ~ paste0("NA", row_number()),
              TRUE ~ label
-           ))
+           ),
+           label = wrapLabels(label, width = labWidth))
 
   # Plot
   if (!is.null(facet)) {
