@@ -87,7 +87,8 @@ top_n_taxa <- function(physeq,
              is.na(label) ~ paste0("NA", row_number()),
              TRUE ~ label
            ),
-           label = wrapLabels(label, width = labWidth))
+           label = wrapLabels(label, width = labWidth),
+           label = factor(label))
 
   # Plot
   if (!is.null(facet)) {
@@ -120,9 +121,9 @@ top_n_taxa <- function(physeq,
   if (color) {
     if (!is.null(facet)) {
       if (colorGlobal) {
-        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
-      } else {
         top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = label))
+      } else {
+        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
       }
     } else {
       top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
