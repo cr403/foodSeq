@@ -17,47 +17,86 @@
 
 top_n_taxa <- function(physeq,
   n = 10,
-  name = ShortName, # dynamically pass in the name of the common name column to use
+  name = "ShortName", # dynamically pass in the name of the common name column to use
   title = NA,
   remNA = FALSE, # option to keep/remove taxa that don't have common name assignment
   color = TRUE, # option to add/remove color to graph
   ylim100 = FALSE, # option to make ylim = (0,100)
-  facet = NULL # optional facet_wrap
+  facet = NULL, # optional facet_wrap
+  nrow = NULL # optional facet_wrap nrow
 ){
 
   ps <- physeq
 
-  seqtab <- ps@otu_table %>%
+  # Convert OTU table to presence/absence
+  seqtab.pa <- ps@otu_table %>%
     data.frame() %>%
-    rownames_to_column(var = "sample") %>%
-    pivot_longer(-sample, names_to = "asv", values_to = "count") %>%
-    mutate(presence = ifelse(count > 0, 1, 0)) %>%
-    group_by(asv) %>%
-    summarise(prevalence = sum(presence) / n_distinct(sample) * 100, .groups = "drop")
+    rownames_to_column(var = "samid") %>%
+    pivot_longer(-samid, names_to = "asv") %>%
+    mutate(presence = ifelse(value > 0, 1, 0))
 
+  if (!is.null(facet)) {
+    # Extract facet variable
+    samdf <- ps@sam_data %>%
+      data.frame() %>%
+      rownames_to_column(var = "samid") %>%
+      select(samid, .data[[facet]])
+
+    # Group to facet variable and calculate prevalence
+    seqtab <- seqtab.pa %>%
+      left_join(samdf, by = "samid") %>%
+      group_by(asv, .data[[facet]]) %>%
+      summarise(prevalence = sum(presence) / n_distince(samid) * 100, .groups = "drop")
+
+  } else {
+    # Calculate prevalence globally
+    seqtab <- seqtab.pa
+      group_by(asv) %>%
+      summarise(prevalence = sum(presence) / n_distinct(sample) * 100, .groups = "drop")
+  }
+
+  # Extract tax table
   taxtab <- ps@tax_table %>%
     data.frame() %>%
     rownames_to_column(var = "asv")
 
+  # Remove NA's if desired
   if(remNA) {
     taxtab <- taxtab %>%
-      filter(!is.na({{name}}))
+      filter(!is.na(.data[[name]]))
   }
 
-  top_taxa <- taxtab %>%
-    left_join(seqtab, by = "asv") %>% # add prevalence column
-    slice_max(order_by = prevalence, n = n) %>%
-    mutate(lowestLevel = coalesce({{name}}, species, genus, family, order, class, phylum, superkingdom),
-           lowestLevel = case_when(
-             is.na(lowestLevel) ~ paste0("NA", row_number()),
-             TRUE ~ lowestLevel
-           ),
-           {{name}} := factor({{name}}, levels = unique({{name}}[order(prevalence)])),
-           lowestLevel = factor(lowestLevel, levels = unique(lowestLevel[order(prevalence)])))
+  # Add taxonomy labels
+  if (!is.null(facet)) {
+    top_taxa <- taxtab %>%
+      left_join(seqtab, by = "asv") %>%
+      group_by(.data[[facet]])
+  } else {
+    top_taxa <- taxtab %>%
+      left_join(seqtab, by = "asv")
+  }
 
-  top_taxa_plot <- top_taxa %>%
-    ggplot(aes(x = lowestLevel, y = prevalence)) +
-    # geom_bar(stat = "identity") +
+  top_taxa <- top_taxa %>%
+    slice_max(order_by = prevalence, n = n, with_ties = FALSE) %>%
+    mutate(label = coalesce(.data[[name]], species, genus, family, order, class, phylum, superkingdom),
+           label = case_when(
+             is.na(label) ~ paste0("NA", row_number()),
+             TRUE ~ label
+           ))
+
+  # Plot
+  if (!is.null(facet)) {
+    top_taxa_plot <- top_taxa %>%
+      ggplot(aes(x = tidytext::reorder_within(label, prevalence, .data[[facet]]), y = prevalence)) +
+      facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow) +
+      tidytext::scale_x_reordered()
+  } else {
+    top_taxa_plot <- top_taxa %>%
+      ggplot(aes(x = fct_reorder(label, prevalence), y = prevalence))
+  }
+
+  top_taxa_plot <- top_taxa_plot +
+    geom_bar(stat = "identity") +
     coord_flip() +
     labs(x = "",
          y = "% samples w/ taxa") +
@@ -65,6 +104,7 @@ top_n_taxa <- function(physeq,
           axis.title = element_text(size = 14),
           axis.text = element_text(size = 12),
           axis.text.x = element_text(angle = 45, hjust = 1),
+          strip.text = element_text(size = 12),
           legend.position = "none")
 
   if (ylim100) {
@@ -77,12 +117,6 @@ top_n_taxa <- function(physeq,
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = {{name}}))
   } else {
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
-  }
-
-  if (!is.null(facet)) {
-    top_taxa_plot <- top_taxa_plot + facet_wrap(~.data[[facet]], scales = "free_x")
-  } else {
-      top_taxa_plot <- top_taxa_plot
   }
 
   if(is.na(title)) {
