@@ -13,6 +13,7 @@
 #' @param xPC Principal Component for x-axis
 #' @param yPC Principal Component for y-axis
 #' @param ellipse optional add centroid ellipses
+#' @param bplab name of column that you want to use for labeling the biplot
 #'
 #' @return pca biplot with nTaxa factor loadings displayed
 #' @return samdf with all pc's added as columns
@@ -30,7 +31,8 @@ pcaPlot <- function(ps, # clr transformed and filtered data
                     mid = "mean", # for customGradient -- midpoint to median, mean, middle of range
                     xPC = 1, # Principal Component for x-axis
                     yPC = 2,  # Principal Component for y-axis
-                    ellipse = FALSE # optional add centroid ellipses
+                    ellipse = FALSE, # optional add centroid ellipses
+                    bplab = NULL # optional variable name for biplot arrow labels
 ) {
 
   if ("name" %in% colnames(data.frame(ps@sam_data))) {
@@ -38,6 +40,15 @@ pcaPlot <- function(ps, # clr transformed and filtered data
     sample_data(ps) <- ps@sam_data %>%
       data.frame() %>%
       dplyr::rename(name.x = name)
+  }
+
+  if (!is.null(bplab)) {
+    # Relocate bplab to the end of tax table so it will be used for labeling
+    tax_table(ps) <- ps@tax_table %>%
+      data.frame() %>%
+      relocate(.data[[bplab]], .after = everything()) %>%
+      as.matrix() %>%
+      tax_table()
   }
 
   samdf <- data.frame(ps@sam_data) %>%
