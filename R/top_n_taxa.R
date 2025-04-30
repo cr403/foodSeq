@@ -118,8 +118,9 @@ top_n_taxa <- function(physeq,
   if (color) {
     if (!is.null(facet)) {
       top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
+    } else {
+      top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
     }
-    top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
   } else {
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
   }
