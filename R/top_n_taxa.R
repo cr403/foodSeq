@@ -88,7 +88,10 @@ top_n_taxa <- function(physeq,
              TRUE ~ label
            ),
            label = wrapLabels(label, width = labWidth),
-           label = factor(label))
+           label = factor(label)) %>%
+    group_by(across(any_of(.data[[facet]]))) %>%
+    arrange(desc(prevalence), .by_group = TRUE) %>%
+    mutate(rank = factor(row_number()))
 
   # Plot
   if (!is.null(facet)) {
@@ -121,7 +124,7 @@ top_n_taxa <- function(physeq,
   if (color) {
     if (!is.null(facet)) {
       if (colorGlobal) {
-        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = label))
+        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = rank))
       } else {
         top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
       }
