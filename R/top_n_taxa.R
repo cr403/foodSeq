@@ -99,7 +99,7 @@ top_n_taxa <- function(physeq,
   }
 
   top_taxa_plot <- top_taxa_plot +
-    geom_bar(stat = "identity") +
+    # geom_bar(stat = "identity") +
     coord_flip() +
     labs(x = "",
          y = "% samples w/ taxa") +
