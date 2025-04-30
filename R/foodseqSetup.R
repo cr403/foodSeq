@@ -62,9 +62,12 @@ foodseqSetup <- function(physeq,
 
     # Add common names -- this is based on the old common names file that is a 1-to-1 match for ASV's
     if(!is.null(CommonNames)) {
+      taxcols <- c("superkingdom", "phylum", "class", "order", "family", "genus", "species", "subspecies", "forma", "varietas")
+
       tax_table(ps) <- ps@tax_table %>%
         data.frame() %>%
         rownames_to_column(var = "asv") %>%
+        select(any_of(taxcols)) %>% # prevents double assignment of column names
         left_join(CommonNames, by = "asv") %>%
         column_to_rownames(var = "asv") %>%
         as.matrix() %>%
