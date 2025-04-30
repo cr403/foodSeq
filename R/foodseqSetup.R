@@ -86,7 +86,7 @@ foodseqSetup <- function(physeq,
 
     # CLR-transform and filter
     if (!is.null(sepVar)) {
-      num <- ps@sam_data$sepVar %>%
+      num <- ps@sam_data[[sepVar]] %>%
         unique()
 
       clr.list <- list()
@@ -289,7 +289,7 @@ foodseqSetup <- function(physeq,
 
     # CLR-transform and Filter NA's
     if (!is.null(sepVar)) {
-      num <- ps@sam_data$sepVar %>%
+      num <- ps@sam_data[[sepVar]] %>%
         unique()
 
       clr.list <- list()
