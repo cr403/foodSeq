@@ -67,7 +67,7 @@ foodseqSetup <- function(physeq,
       tax_table(ps) <- ps@tax_table %>%
         data.frame() %>%
         rownames_to_column(var = "asv") %>%
-        select(any_of(taxcols)) %>% # prevents double assignment of column names
+        select(asv, any_of(taxcols)) %>% # prevents double assignment of column names
         left_join(CommonNames, by = "asv") %>%
         column_to_rownames(var = "asv") %>%
         as.matrix() %>%
