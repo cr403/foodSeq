@@ -8,6 +8,7 @@
 #' @param title optional title
 #' @param remNA option to keep/remove taxa that don't have common name assignment
 #' @param color option to add/remove color to the graph
+#' @param facet option to add facet_wrap()
 #'
 #' @return top_taxa = data frame of top n taxonomy table
 #' @return top_taxa_plot = bar graph of top n taxa
@@ -20,7 +21,8 @@ top_n_taxa <- function(physeq,
   title = NA,
   remNA = FALSE, # option to keep/remove taxa that don't have common name assignment
   color = TRUE, # option to add/remove color to graph
-  ylim100 = FALSE # option to make ylim = (0,100)
+  ylim100 = FALSE, # option to make ylim = (0,100)
+  facet = NULL # optional facet_wrap
 ){
 
   ps <- physeq
@@ -77,7 +79,11 @@ top_n_taxa <- function(physeq,
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
   }
 
-  top_taxa_plot <- top_taxa_plot
+  if (!is.null(facet)) {
+    top_taxa_plot <- top_taxa_plot + facet_wrap(~.data[[facet]], scales = "free_x")
+  } else {
+      top_taxa_plot <- top_taxa_plot
+  }
 
   if(is.na(title)) {
     top_taxa_plot <- top_taxa_plot +
