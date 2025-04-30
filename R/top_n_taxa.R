@@ -117,7 +117,7 @@ top_n_taxa <- function(physeq,
     }
 
   if (color) {
-    top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = {{name}}))
+    top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = label))
   } else {
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
   }
