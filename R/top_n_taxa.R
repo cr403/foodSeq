@@ -73,16 +73,14 @@ top_n_taxa <- function(physeq,
   # Add taxonomy labels
   top_taxa <- top_taxa %>%
     left_join(seqtab, by = "asv") %>%
-    arrange(across(any_of(facet)), desc(prevalence), label) %>%
     mutate(label = coalesce(.data[[name]], species, genus, family, order, class, phylum, superkingdom),
            label = case_when(
              is.na(label) ~ paste0("NA", row_number()),
              TRUE ~ label
            ),
-           label = wrapLabels(label, width = labWidth),
-           label = factor(label)) %>%
+           label = wrapLabels(label, width = labWidth)) %>%
+    arrange(desc(prevalence), desc(prevalence), label) %>%
     group_by(across(any_of(facet))) %>%
-    arrange(desc(prevalence), .by_group = TRUE) %>%
     slice_head(n = n) %>%
     mutate(rank = factor(row_number()))
 
