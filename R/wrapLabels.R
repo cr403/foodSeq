@@ -8,7 +8,7 @@
 #' @return input string with new line at every width characters
 #'
 #' @export
-wrapLabels <- function(x, width = 20) {
+wrapLabels <- function(x, width = 60) {
   sapply(x, function(str) {
     if (nchar(str) > width) {
       paste(strwrap(str, width = width), collapse = "\n")

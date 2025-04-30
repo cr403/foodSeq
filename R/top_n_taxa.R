@@ -19,7 +19,7 @@
 top_n_taxa <- function(physeq,
   n = 10,
   name = "ShortName", # dynamically pass in the name of the common name column to use
-  labWidth = 20, # character length for string breakpoints
+  labWidth = 60, # character length for string breakpoints
   title = NA,
   remNA = FALSE, # option to keep/remove taxa that don't have common name assignment
   color = TRUE, # option to add/remove color to graph
