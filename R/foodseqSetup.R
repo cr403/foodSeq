@@ -4,6 +4,7 @@
 #'
 #' @param physeq raw phyloseq object
 #' @param amplicon trnl or 12s
+#' @param sepVar define sam_data variable by which CLR transform will be done separately (e.g., seq_date, Study)
 #' @param collapse optional to run collapseNoMismatch()
 #' @param optional space to add common names file
 #'
@@ -15,6 +16,7 @@
 #' @export
 foodseqSetup <- function(physeq,
                          amplicon = "",
+                         sepVar = NULL,
                          collapse = FALSE,
                          CommonNames = NULL){
   ps <- physeq
@@ -38,6 +40,7 @@ foodseqSetup <- function(physeq,
     sample_data(ps) <- sample_data(samdf)
   }
 
+  ##############################################################################
   # trnL
   if(amplicon == "trnl") {
 
@@ -79,11 +82,36 @@ foodseqSetup <- function(physeq,
     ps.ra <- transform_sample_counts(ps, function(x){x/sum(x)})
 
     # CLR-transform and filter
-    ps.filt.clr <- ps %>%
-      prune_samples(sample_sums(.) >0, .) %>% # Remove samples that do not have any reads, will mess up PCA plot
-      microbiome::transform(transform = "compositional") %>%
-      microbiome::transform(transform = "clr") %>%
-      subset_taxa(!is.na(superkingdom)) # Remove non-foods
+    if (!is.null(sepVar)) {
+      num <- ps@sam_data$sepVar %>%
+        unique()
+
+      clr.list <- list()
+
+      # Perform filter within sepVar
+      for (i in num) {
+        ps.temp <- prune_samples(get_variable(ps, sepVar) %in% i, ps) %>%
+          prune_taxa(taxa_sums(.) > 0, .)
+
+        ps.filt.clr <- ps.temp %>%
+          prune_samples(sample_sums(.) >0, .) %>% # Remove samples that do not have any reads, will mess up PCA plot
+          microbiome::transform(transform = "compositional") %>%
+          microbiome::transform(transform = "clr") %>%
+          subset_taxa(!is.na(superkingdom)) # Remove non-foods
+
+        clr.list[[i]] <- ps.filt.clr
+      }
+
+      # Merge separate CLR filtered phyloseqs
+      ps.filt.clr <- do.call(merge_phyloseq, clr.list)
+
+    } else { # Perform CLR filter within the entire phyloseq object
+      ps.filt.clr <- ps %>%
+        prune_samples(sample_sums(.) >0, .) %>% # Remove samples that do not have any reads, will mess up PCA plot
+        microbiome::transform(transform = "compositional") %>%
+        microbiome::transform(transform = "clr") %>%
+        subset_taxa(!is.na(superkingdom)) # Remove non-foods
+    }
 
     # Update read counts in phyloseq object
     sample_data(ps.filt.clr)$reads <- sample_sums(ps.filt.clr)
@@ -114,6 +142,7 @@ foodseqSetup <- function(physeq,
       sample_data()
   }
 
+  ##############################################################################
   # 12SV5
   if(amplicon == "12s") {
     # Replace "NA" strings with NA value
@@ -256,12 +285,37 @@ foodseqSetup <- function(physeq,
     ps.ra <- transform_sample_counts(ps.glom, function(x){x/sum(x)})
 
     # CLR-transform and Filter NA's
-    ps.filt.clr <- ps.glom %>%
-      prune_samples(sample_sums(.) >0, .) %>% # Remove samples that do not have any reads, will mess up PCA plot
-      microbiome::transform(transform = "compositional") %>%
-      microbiome::transform(transform = "clr") %>%
-      subset_taxa(!is.na(kingdom)) %>%  # Remove non-foods
-      subset_taxa(lowestLevel != "Homo sapiens") # Remove human reads
+    if (!is.null(sepVar)) {
+      num <- ps@sam_data$sepVar %>%
+        unique()
+
+      clr.list <- list()
+
+      # Perform separated CLR-filtering
+      for (i in num) {
+        ps.temp <- prune_samples(get_variable(ps.glom, sepVar) %in% i, ps.glom) %>%
+          prune_taxa(taxa_sums(.) > 0, .)
+
+        ps.filt.clr <- ps.temp %>%
+          prune_samples(sample_sums(.) >0, .) %>% # Remove samples that do not have any reads, will mess up PCA plot
+          microbiome::transform(transform = "compositional") %>%
+          microbiome::transform(transform = "clr") %>%
+          subset_taxa(!is.na(kingdom)) %>%  # Remove non-foods
+          subset_taxa(lowestLevel != "Homo sapiens") # Remove human reads
+
+        clr.list[[i]] <- ps.filt.clr
+      }
+
+      # Merge separate CLR filtered phyloseqs
+      ps.filt.clr <- do.call(merge_phyloseq, clr.list)
+    } else { # Perform regular CLR-filtering within entire phyloseq object
+      ps.filt.clr <- ps.glom %>%
+        prune_samples(sample_sums(.) >0, .) %>% # Remove samples that do not have any reads, will mess up PCA plot
+        microbiome::transform(transform = "compositional") %>%
+        microbiome::transform(transform = "clr") %>%
+        subset_taxa(!is.na(kingdom)) %>%  # Remove non-foods
+        subset_taxa(lowestLevel != "Homo sapiens") # Remove human reads
+    }
 
     # Remove human reads
     ps.noHuman <- ps.glom %>%
