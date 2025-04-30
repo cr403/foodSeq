@@ -79,10 +79,11 @@ top_n_taxa <- function(physeq,
              TRUE ~ label
            ),
            label = wrapLabels(label, width = labWidth)) %>%
-    arrange(desc(prevalence), desc(prevalence), label) %>%
     group_by(across(any_of(facet))) %>%
+    arrange(desc(prevalence), label, .by_group = TRUE) %>%
+    mutate(rank = factor(row_number())) %>%
     slice_head(n = n) %>%
-    mutate(rank = factor(row_number()))
+    ungroup()
 
   # Plot
   if (!is.null(facet)) {
