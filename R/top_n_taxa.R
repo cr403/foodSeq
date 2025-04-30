@@ -99,7 +99,6 @@ top_n_taxa <- function(physeq,
   }
 
   top_taxa_plot <- top_taxa_plot +
-    # geom_bar(stat = "identity") +
     coord_flip() +
     labs(x = "",
          y = "% samples w/ taxa") +
@@ -117,7 +116,10 @@ top_n_taxa <- function(physeq,
     }
 
   if (color) {
-    top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = label))
+    if (!is.null(facet)) {
+      top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
+    }
+    top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
   } else {
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
   }
