@@ -10,6 +10,7 @@
 #' @param remNA option to keep/remove taxa that don't have common name assignment
 #' @param color option to add/remove color to the graph
 #' @param facet option to add facet_wrap()
+#' @param colorGlobal option to make colors across facets the same (e.g., Poaceae always same color as Poaceae)
 #'
 #' @return top_taxa = data frame of top n taxonomy table
 #' @return top_taxa_plot = bar graph of top n taxa
@@ -23,6 +24,7 @@ top_n_taxa <- function(physeq,
   title = NA,
   remNA = FALSE, # option to keep/remove taxa that don't have common name assignment
   color = TRUE, # option to add/remove color to graph
+  colorGlobal = FALSE, # option to make colors across facets the same (e.g., Poaceae always same color as Poaceae)
   ylim100 = FALSE, # option to make ylim = (0,100)
   facet = NULL, # optional facet_wrap
   nrow = NULL # optional facet_wrap nrow
@@ -117,7 +119,11 @@ top_n_taxa <- function(physeq,
 
   if (color) {
     if (!is.null(facet)) {
-      top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
+      if (colorGlobal) {
+        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
+      } else {
+        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = label))
+      }
     } else {
       top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
     }
