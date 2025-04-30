@@ -89,7 +89,7 @@ top_n_taxa <- function(physeq,
            ),
            label = wrapLabels(label, width = labWidth),
            label = factor(label)) %>%
-    group_by(across(any_of(.data[[facet]]))) %>%
+    group_by(across(any_of(facet))) %>%
     arrange(desc(prevalence), .by_group = TRUE) %>%
     mutate(rank = factor(row_number()))
 
