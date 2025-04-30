@@ -59,5 +59,3 @@ To check for updates, you can run this chunk within your desired project--**NOT 
 # library(foodSeq)
 ```
 
-
-ahh im having issues with loading Rmd and md files bc they got out of sync

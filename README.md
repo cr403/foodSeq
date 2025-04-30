@@ -57,6 +57,3 @@ It’s commented out here so that the Rmd file will knit.
 # devtools::install("~/Library/CloudStorage/Box-Box/project_davidlab/LAD_LAB_Personnel/Caroline_R/10_Repo/foodSeq")
 # library(foodSeq)
 ```
-
-ahh im having issues with loading Rmd and md files bc they got out of
-sync
