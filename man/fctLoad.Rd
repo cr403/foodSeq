@@ -4,7 +4,14 @@
 \alias{fctLoad}
 \title{Factor Loading Analysis}
 \usage{
-fctLoad(physeq, pca_output, PCx = 1, nTaxa = 10)
+fctLoad(
+  physeq,
+  pca_output,
+  PCx = 1,
+  nTaxa = 10,
+  name = "ShortName",
+  labWidth = 60
+)
 }
 \arguments{
 \item{physeq}{clr filtered phyloseq object on which pcaPlot() was run}
@@ -14,6 +21,10 @@ fctLoad(physeq, pca_output, PCx = 1, nTaxa = 10)
 \item{PCx}{principal component for x-axis of graph}
 
 \item{nTaxa}{number of taxa to include on plot}
+
+\item{name}{name of common name column}
+
+\item{labWidth}{character length breakpoint for wrapping labels}
 }
 \value{
 load.df = loadings data frame in descending order by PCx

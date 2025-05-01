@@ -275,6 +275,7 @@ foodseqSetup <- function(physeq,
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
       mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, kingdom)) %>%
+      relocate(common_name, .before = lowestLevel) %>% # move before so it doesn't get removed during glom step
       as.matrix() %>%
       tax_table()
 

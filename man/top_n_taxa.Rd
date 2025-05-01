@@ -7,10 +7,15 @@
 top_n_taxa(
   physeq,
   n = 10,
-  name = ShortName,
+  name = "ShortName",
+  labWidth = 60,
   title = NA,
   remNA = FALSE,
-  color = TRUE
+  color = TRUE,
+  colorGlobal = FALSE,
+  ylim100 = FALSE,
+  facet = NULL,
+  nrow = NULL
 )
 }
 \arguments{
@@ -20,11 +25,17 @@ top_n_taxa(
 
 \item{name}{name of common name column (e.g., ShortName)}
 
+\item{labWidth}{character length for string breakpoints (used for long labels)}
+
 \item{title}{optional title}
 
 \item{remNA}{option to keep/remove taxa that don't have common name assignment}
 
 \item{color}{option to add/remove color to the graph}
+
+\item{colorGlobal}{option to make colors across facets the same (e.g., Poaceae always same color as Poaceae)}
+
+\item{facet}{option to add facet_wrap()}
 }
 \value{
 top_taxa = data frame of top n taxonomy table

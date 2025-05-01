@@ -12,7 +12,8 @@ pcDens(
   scale = 2,
   alpha = 0.7,
   title.size = 14,
-  text.size = 12
+  text.size = 12,
+  customColors = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ pcDens(
 \item{title.size}{= 14}
 
 \item{text.size}{= 12}
+
+\item{customColors}{optional color palette inclusion}
 }
 \value{
 density plot

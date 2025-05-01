@@ -14,7 +14,8 @@ pcaPlot(
   mid = "mean",
   xPC = 1,
   yPC = 2,
-  ellipse = FALSE
+  ellipse = FALSE,
+  bplab = NULL
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ pcaPlot(
 \item{yPC}{Principal Component for y-axis}
 
 \item{ellipse}{optional add centroid ellipses}
+
+\item{bplab}{name of column that you want to use for labeling the biplot}
 }
 \value{
 pca biplot with nTaxa factor loadings displayed

@@ -4,14 +4,24 @@
 \alias{foodseqSetup}
 \title{FoodSeq Setup Pipeline}
 \usage{
-foodseqSetup(physeq, amplicon = "", collapse = FALSE)
+foodseqSetup(
+  physeq,
+  amplicon = "",
+  sepVar = NULL,
+  collapse = FALSE,
+  CommonNames = NULL
+)
 }
 \arguments{
 \item{physeq}{raw phyloseq object}
 
 \item{amplicon}{trnl or 12s}
 
+\item{sepVar}{define sam_data variable by which CLR transform will be done separately (e.g., seq_date, Study)}
+
 \item{collapse}{optional to run collapseNoMismatch()}
+
+\item{optional}{space to add common names file}
 }
 \value{
 ps.raw = phyloseq object with no changes from physeq other than adding p/aMR, Shannon, and reads to samdf (no NA/human reads removed)
