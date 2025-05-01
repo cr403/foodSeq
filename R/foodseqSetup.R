@@ -13,6 +13,8 @@
 #' @return ps.ra = changes to ps + transformed to relative abundance
 #' @return ps.filt.clr = changes to ps + NA/human reads removed + clr transformation
 #'
+#' @importFrom dada2 collapseNoMismatch
+#'
 #' @export
 foodseqSetup <- function(physeq,
                          amplicon = "",
