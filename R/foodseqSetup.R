@@ -159,17 +159,17 @@ foodseqSetup <- function(physeq,
 
     # Add common names -- this is based on Ashish's new 12SV5 common names file
     if (!is.null(CommonNames)) {
+      cols <- c("asv", "species", "genus", "family", "order", "class", "phylum", "kingdom")
+
       taxtab <- ps@tax_table %>%
         data.frame() %>%
-        rownames_to_column(var = "asv")
-
-      cols <- c("species", "genus", "family", "order", "class", "phylum", "kingdom")
+        rownames_to_column(var = "asv") %>%
+        dplyr::select(all_of(cols))
 
       taxtab <- taxtab %>%
         mutate(
           scientific_name = trimws(coalesce(species, genus, family, order, class, phylum, kingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
-        ) %>%
-        select(asv, scientific_name, any_of(cols))
+        )
 
       animalnames <- CommonNames %>%
         dplyr::rename(scientific_name = name) %>%
@@ -204,14 +204,12 @@ foodseqSetup <- function(physeq,
         ungroup()  %>% # Remove grouping
         select(asv, common_name)
 
-      cols <- c("kingdom", "phylum", "class", "order", "family", "genus", "species","common_name")
-
       tax_table(ps) <- ps@tax_table %>%
         data.frame() %>%
         rownames_to_column(var = "asv") %>%
+        select(all_of(cols)) %>%
         left_join(result, by = "asv") %>%
         column_to_rownames(var = "asv") %>%
-        select(any_of(cols)) %>%
         as.matrix() %>%
         tax_table()
     }
@@ -275,7 +273,6 @@ foodseqSetup <- function(physeq,
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
       mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, kingdom)) %>%
-      relocate(common_name, .before = lowestLevel) %>% # move before so it doesn't get removed during glom step
       as.matrix() %>%
       tax_table()
 
