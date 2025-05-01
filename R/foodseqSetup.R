@@ -51,7 +51,7 @@ foodseqSetup <- function(physeq,
       before_collapse <- dim(seqtab.merged) # Check dimensions before and after collapse
       print(paste("Before collapse-- ", "Rows: ", before_collapse[1], "Columns: ", before_collapse[2]))
 
-      seqtab.merged <- collapseNoMismatch(seqtab.merged)
+      seqtab.merged <- dada2::collapseNoMismatch(seqtab.merged)
 
       after_collapse <- dim(seqtab.merged)
       print(paste("After collapse-- ", "Rows: ", after_collapse[1], "Columns: ", after_collapse[2]))
