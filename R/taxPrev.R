@@ -84,7 +84,7 @@ taxPrev <- function(physeq, # phyloseq object
     # Add optional strip text labels
     if (!is.null(stripText)) {
       prev.plot <- prev.plot %>%
-        facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow, labeller = labeller(.data[[facet]] = stripText))
+        facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow, labeller = labeller(!!facet := as_labeller(stripText)))
     } else {
       taxList.prev <- seqdf %>%
         group_by(label) %>%
