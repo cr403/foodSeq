@@ -16,9 +16,11 @@ taxPrev(
   localCol = TRUE,
   ylim100 = TRUE,
   labWidth = 60,
+  numLab = FALSE,
   titleSize = 16,
+  axtitleSize = 16,
   textSize = 12,
-  stripSize = 12
+  stripSize = 10
 )
 }
 \arguments{
@@ -44,11 +46,15 @@ taxPrev(
 
 \item{labWidth}{option to set character breakpoint for label wrapping}
 
-\item{titleSize}{set size in element_text()}
+\item{numLab}{option to add value labels to bar chart}
 
-\item{textSize}{set size in element_text()}
+\item{titleSize}{set plot title size}
 
-\item{stripSize}{set size of strip text}
+\item{axtitleSize}{set axis title size}
+
+\item{textSize}{set plot text size}
+
+\item{stripSize}{set strip text size}
 
 \item{stripText}{optional labels for strip text}
 }
