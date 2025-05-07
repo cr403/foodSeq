@@ -14,9 +14,10 @@
 #' @param localCol option for colors to be assigned locally versus globally (e.g., color by rank vs taxa)
 #' @param ylim100 option for setting ylim(0,100)
 #' @param labWidth option to set character breakpoint for label wrapping
-#' @param titleSize set size in element_text()
-#' @param textSize set size in element_text()
-#' @param stripSize set size of strip text
+#' @param titleSize set plot title size
+#' @param axtitleSize set axis title size
+#' @param textSize set plot text size
+#' @param stripSize set strip text size
 #'
 #' @return df  = data frame of taxa and prevalence
 #' @return plot  = bar chart of taxa and prevalence
@@ -34,6 +35,7 @@ taxPrev <- function(physeq, # phyloseq object
                     ylim100 = TRUE, # option to set ylim(0,100) vs letting ggplot decide
                     labWidth = 60, # can edit wrap length
                     titleSize = 16, # title text size
+                    axtitleSize = 16, # axis title size
                     textSize = 12, # text size
                     stripSize = 12 # strip text size
 ){
@@ -117,7 +119,8 @@ taxPrev <- function(physeq, # phyloseq object
   prev.plot <- prev.plot +
     coord_flip() +
     labs(y = "Prevalence (% Samples w/ Taxa)") +
-    theme(title = element_text(size = titleSize, face = "bold"),
+    theme(plot.title = element_text(size = titleSize, face = "bold"),
+          axis.title = element_text(size = axtitleSize, face = "bold"),
           axis.text = element_text(size = textSize),
           strip.text = element_text(size = stripSize))
 
