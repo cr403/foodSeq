@@ -83,7 +83,8 @@ taxPrev <- function(physeq, # phyloseq object
 
     prev.plot <- taxList.prev %>%
       ggplot(aes(x = tidytext::reorder_within(label, by = prevalence, within = .data[[facet]]), y = prevalence)) +
-      tidytext::scale_x_reordered()
+      tidytext::scale_x_reordered() +
+      facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow)
 
   # Build prevalence data frame within entire phyloseq
   } else {
