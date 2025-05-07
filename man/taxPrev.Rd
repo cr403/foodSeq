@@ -57,7 +57,7 @@ taxPrev(
 
 \item{stripSize}{set strip text size}
 
-\item{textLim}{new y boundary for when adding bar value labels - ensures that nothing goes out of bounds}
+\item{textLim}{new y boundary for when adding bar value labels - ensures that nothing goes out of bounds - combine with \code{ylim100 = FALSE} to edit limits}
 
 \item{stripText}{optional labels for strip text}
 }

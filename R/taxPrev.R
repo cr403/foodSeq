@@ -19,7 +19,7 @@
 #' @param axtitleSize set axis title size
 #' @param textSize set plot text size
 #' @param stripSize set strip text size
-#' @param textLim new y boundary for when adding bar value labels - ensures that nothing goes out of bounds
+#' @param textLim new y boundary for when adding bar value labels - ensures that nothing goes out of bounds - combine with `ylim100 = FALSE` to edit limits
 #'
 #' @return df  = data frame of taxa and prevalence
 #' @return plot  = bar chart of taxa and prevalence
