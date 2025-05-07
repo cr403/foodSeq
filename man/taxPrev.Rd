@@ -21,7 +21,8 @@ taxPrev(
   axtitleSize = 16,
   textSize = 12,
   stripSize = 10,
-  textLim = 105
+  textLim = 105,
+  hjust = -0.5
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ taxPrev(
 \item{stripSize}{set strip text size}
 
 \item{textLim}{new y boundary for when adding bar value labels - ensures that nothing goes out of bounds - combine with \code{ylim100 = FALSE} to edit limits}
+
+\item{hjust}{hjust for geom_text() labels (bar values)}
 
 \item{stripText}{optional labels for strip text}
 }

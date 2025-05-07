@@ -20,6 +20,7 @@
 #' @param textSize set plot text size
 #' @param stripSize set strip text size
 #' @param textLim new y boundary for when adding bar value labels - ensures that nothing goes out of bounds - combine with `ylim100 = FALSE` to edit limits
+#' @param hjust hjust for geom_text() labels (bar values)
 #'
 #' @return df  = data frame of taxa and prevalence
 #' @return plot  = bar chart of taxa and prevalence
@@ -41,7 +42,8 @@ taxPrev <- function(physeq, # phyloseq object
                     axtitleSize = 16, # axis title size
                     textSize = 12, # text size
                     stripSize = 10, # strip text size
-                    textLim = 105 # new y boundary for when adding bar value labels - ensures that nothing goes out of bounds
+                    textLim = 105, # new y boundary for when adding bar value labels - ensures that nothing goes out of bounds
+                    hjust = -0.5 # hjust for geom_text() labels (bar values)
 ){
   ps <- physeq
 
@@ -150,7 +152,7 @@ taxPrev <- function(physeq, # phyloseq object
   # Add number labels (default is no label)
   if(numLab) {
     prev.plot <- prev.plot +
-      geom_text(aes(label = round(prevalence, 1)), hjust = -0.5) +
+      geom_text(aes(label = round(prevalence, 1)), hjust = hjust) +
       expand_limits(y = textLim)
   }
 
