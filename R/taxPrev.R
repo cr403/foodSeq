@@ -37,7 +37,7 @@ taxPrev <- function(physeq, # phyloseq object
                     titleSize = 16, # title text size
                     axtitleSize = 16, # axis title size
                     textSize = 12, # text size
-                    stripSize = 12 # strip text size
+                    stripSize = 10 # strip text size
 ){
   ps <- physeq
 
