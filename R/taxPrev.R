@@ -16,6 +16,7 @@
 #' @param labWidth option to set character breakpoint for label wrapping
 #' @param titleSize set size in element_text()
 #' @param textSize set size in element_text()
+#' @param stripSize set size of strip text
 #'
 #' @return df  = data frame of taxa and prevalence
 #' @return plot  = bar chart of taxa and prevalence
@@ -32,8 +33,9 @@ taxPrev <- function(physeq, # phyloseq object
                     localCol = TRUE, # option for local vs global colors
                     ylim100 = TRUE, # option to set ylim(0,100) vs letting ggplot decide
                     labWidth = 60, # can edit wrap length
-                    titleSize = 16,
-                    textSize = 12
+                    titleSize = 16, # title text size
+                    textSize = 12, # text size
+                    stripSize = 12 # strip text size
 ){
   ps <- physeq
 
@@ -81,10 +83,7 @@ taxPrev <- function(physeq, # phyloseq object
       ggplot(aes(x = tidytext::reorder_within(label, by = prevalence, within = .data[[facet]]), y = prevalence)) +
       tidytext::scale_x_reordered()
 
-    # Add optional strip text labels
-    if (!is.null(stripText)) {
-      prev.plot <- prev.plot %>%
-        facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow, labeller = labeller(!!facet := as_labeller(stripText)))
+
     } else {
       taxList.prev <- seqdf %>%
         group_by(label) %>%
@@ -130,7 +129,8 @@ taxPrev <- function(physeq, # phyloseq object
     coord_flip() +
     labs(y = "Prevalence (% Samples w/ Taxa)") +
     theme(title = element_text(size = titleSize, face = "bold"),
-          axis.text = element_text(size = textSize))
+          axis.text = element_text(size = textSize),
+          strip.text = element_text(size = stripSize))
 
   # Set axis limits
   if(ylim100) {
