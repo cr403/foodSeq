@@ -147,7 +147,7 @@ taxPrev <- function(physeq, # phyloseq object
 
   # Add number labels (default is no label)
   if(numLab) {
-    prev.plot <- prev.plot + geom_text(aes(label = round(prevalence, 1)), vjust = -0.5)
+    prev.plot <- prev.plot + geom_text(aes(label = round(prevalence, 1)), hjust = -0.5)
   }
 
   return(list(df = taxList.prev,
