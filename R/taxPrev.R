@@ -151,7 +151,7 @@ taxPrev <- function(physeq, # phyloseq object
   if(numLab) {
     prev.plot <- prev.plot +
       geom_text(aes(label = round(prevalence, 1)), hjust = -0.5) +
-      expand_limits(y = textLim)
+      expand_limits(x = textLim)
   }
 
   return(list(df = taxList.prev,
