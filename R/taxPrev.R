@@ -83,17 +83,6 @@ taxPrev <- function(physeq, # phyloseq object
       ggplot(aes(x = tidytext::reorder_within(label, by = prevalence, within = .data[[facet]]), y = prevalence)) +
       tidytext::scale_x_reordered()
 
-
-    } else {
-      taxList.prev <- seqdf %>%
-        group_by(label) %>%
-        summarise(prevalence = sum(presence) / n_distinct(samid) * 100) %>%
-        ungroup()
-
-      prev.plot <- prev.plot
-        facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow)
-      }
-
   # Build prevalence data frame within entire phyloseq
   } else {
     taxList.prev <- seqdf %>%
