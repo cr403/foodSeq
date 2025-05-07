@@ -20,7 +20,8 @@ taxPrev(
   titleSize = 16,
   axtitleSize = 16,
   textSize = 12,
-  stripSize = 10
+  stripSize = 10,
+  textLim = 105
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ taxPrev(
 \item{textSize}{set plot text size}
 
 \item{stripSize}{set strip text size}
+
+\item{textLim}{new y boundary for when adding bar value labels - ensures that nothing goes out of bounds}
 
 \item{stripText}{optional labels for strip text}
 }
