@@ -14,6 +14,7 @@
 #' @param localCol option for colors to be assigned locally versus globally (e.g., color by rank vs taxa)
 #' @param ylim100 option for setting ylim(0,100)
 #' @param labWidth option to set character breakpoint for label wrapping
+#' @param numLab option to add value labels to bar chart
 #' @param titleSize set plot title size
 #' @param axtitleSize set axis title size
 #' @param textSize set plot text size
@@ -34,6 +35,7 @@ taxPrev <- function(physeq, # phyloseq object
                     localCol = TRUE, # option for local vs global colors
                     ylim100 = TRUE, # option to set ylim(0,100) vs letting ggplot decide
                     labWidth = 60, # can edit wrap length
+                    numLab = FALSE, # option to add value labels to bar chart
                     titleSize = 16, # title text size
                     axtitleSize = 16, # axis title size
                     textSize = 12, # text size
@@ -141,6 +143,11 @@ taxPrev <- function(physeq, # phyloseq object
     prev.plot <- prev.plot + labs(x = taxListTitle)
   } else {
     prev.plot <- prev.plot + labs(x = "")
+  }
+
+  # Add number labels (default is no label)
+  if(numLab) {
+    prev.plot <- prev.plot + geom_text(aes(label = round(prevalence, 1)), vjust = -0.5)
   }
 
   return(list(df = taxList.prev,
