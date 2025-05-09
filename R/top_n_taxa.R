@@ -54,7 +54,7 @@ top_n_taxa <- function(physeq,
 
   } else {
     # Calculate prevalence globally
-    seqtab <- seqtab.pa
+    seqtab <- seqtab.pa %>%
       group_by(asv) %>%
       summarise(prevalence = sum(presence) / n_distinct(samid) * 100, .groups = "drop")
   }
