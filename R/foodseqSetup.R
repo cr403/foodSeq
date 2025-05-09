@@ -7,11 +7,14 @@
 #' @param sepVar define sam_data variable by which CLR transform will be done separately (e.g., seq_date, Study)
 #' @param collapse optional to run collapseNoMismatch()
 #' @param CommonNames optional space to add common names file
+#' @param CommonNameCol optional to add name of common name column to make a new column that's labeled with common name if available and lowestLevel if not
 #'
 #' @return ps.raw = phyloseq object with no changes from physeq other than adding p/aMR, Shannon, and reads to samdf (no NA/human reads removed)
-#' @return ps = phyloseq object wiht no changes from physeq other than changes to ps.raw + animals glommed
-#' @return ps.ra = changes to ps + transformed to relative abundance
-#' @return ps.filt.clr = changes to ps + NA/human reads removed + clr transformation
+#' @return ps = phyloseq object with no changes from physeq other than changes to ps.raw + animals glommed + NA/human reads removed
+#' @return ps.ra = changes to ps (but NA's conserved) + transformed to relative abundance
+#' @return ps.filt.clr = changes to ps + clr transformation + NA/human reads removed
+#' @return ps.na = phyloseq object sub-setted for samples containing NA reads
+#'
 #'
 #' @importFrom dada2 collapseNoMismatch
 #'
@@ -20,7 +23,8 @@ foodseqSetup <- function(physeq,
                          amplicon = "",
                          sepVar = NULL,
                          collapse = FALSE,
-                         CommonNames = NULL){
+                         CommonNames = NULL,
+                         CommonNameCol = NULL){
   ps <- physeq
   amplicon <- tolower(amplicon) # change casing for matching
 
@@ -62,6 +66,13 @@ foodseqSetup <- function(physeq,
       otu_table(ps) <- otu_table(seqtab.merged, taxa_are_rows = FALSE) # Add back OTU table to ps
     }
 
+    # Add lowestLevel
+    tax_table(ps) <- ps@tax_table %>%
+      data.frame() %>%
+      mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom)) %>%
+      as.matrix() %>%
+      tax_table()
+
     # Add common names -- this is based on the old common names file that is a 1-to-1 match for ASV's
     if(!is.null(CommonNames)) {
       taxcols <- c("superkingdom", "phylum", "class", "order", "family", "genus", "species", "subspecies", "forma", "varietas")
@@ -74,16 +85,16 @@ foodseqSetup <- function(physeq,
         column_to_rownames(var = "asv") %>%
         as.matrix() %>%
         tax_table()
+
+      # Add taxonomy label that defaults to common name but fills in with lowestLevel if NA
+      if(!is.null(CommonNameCol)) {
+        tax_table(ps) <- ps@tax_table %>%
+          data.frame() %>%
+          mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]], lowestLevel, .data[[CommonNameCol]])))
+      }
     }
 
-    # Add lowestLevel
-    tax_table(ps) <- ps@tax_table %>%
-      data.frame() %>%
-      mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom)) %>%
-      as.matrix() %>%
-      tax_table()
-
-    # Relative Abundance
+        # Relative Abundance
     ps.ra <- transform_sample_counts(ps, function(x){x/sum(x)})
 
     # CLR-transform and filter
@@ -145,6 +156,9 @@ foodseqSetup <- function(physeq,
       dplyr::rename(Shannon_diversity_plants = Shannon) %>%
       column_to_rownames(var = "samid") %>%
       sample_data()
+
+    # ps.na
+    ps.na <- subset_taxa(ps, is.na(superkingdom))
   }
 
   ##############################################################################
@@ -154,6 +168,13 @@ foodseqSetup <- function(physeq,
     tax_table(ps) <- tax_table(ps) %>%
       as.data.frame() %>%
       mutate(across(everything(), ~ ifelse(. == "NA", NA, .))) %>%
+      as.matrix() %>%
+      tax_table()
+
+    # Add lowestLevel
+    tax_table(ps) <- ps@tax_table %>%
+      data.frame() %>%
+      mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, kingdom)) %>%
       as.matrix() %>%
       tax_table()
 
@@ -212,6 +233,13 @@ foodseqSetup <- function(physeq,
         column_to_rownames(var = "asv") %>%
         as.matrix() %>%
         tax_table()
+
+      # Add taxonomy label that defaults to common name but fills in with lowestLevel if NA
+      if(!is.null(CommonNameCol)) {
+        tax_table(ps) <- ps@tax_table %>%
+          data.frame() %>%
+          mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]], lowestLevel, .data[[CommonNameCol]])))
+      }
     }
 
     # Add human_percent to sam_data for each individual
@@ -270,12 +298,6 @@ foodseqSetup <- function(physeq,
     total_reads <- sample_sums(ps)
 
     # Glom animals
-    tax_table(ps) <- ps@tax_table %>%
-      data.frame() %>%
-      mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, kingdom)) %>%
-      as.matrix() %>%
-      tax_table()
-
     ps.glom <- tax_glom(ps, taxrank = "lowestLevel")
 
     tax_table(ps.glom) <- ps.glom@tax_table %>%
@@ -352,6 +374,9 @@ foodseqSetup <- function(physeq,
     # Update read counts
     sample_data(ps.filt.clr)$reads <- sample_sums(ps.filt.clr)
     sample_data(ps)$reads <- sample_sums(ps)
+
+    # ps.na
+    ps.na <- subset_taxa(ps, is.na(superkingdom))
   }
 
   # ### Beta diversity metrics -- This needs to be incorporated later
@@ -359,9 +384,10 @@ foodseqSetup <- function(physeq,
   # bc_matrix <- as.matrix(bc_dist)
 
   return(list(ps.raw = physeq, # Raw ps with no changes, but p/aMR, Shannon, and reads are updated (no NA/human filtered)
-              ps = ps, # Raw ps + animals glommed
-              ps.ra = ps.ra, # Relative abundance
-              ps.filt.clr = ps.filt.clr # Foods only, CLR-transformed
+              ps = ps, # Animals glommed + NA/human reads removed
+              ps.ra = ps.ra, # Relative abundance, includes NA's
+              ps.filt.clr = ps.filt.clr, # Foods only, CLR-transformed
+              ps.na = ps.na # Raw ps with only is.na(superkingdom) samples
               #bc_dist = bc_dist
               #bc_matrix = bc_matrix
   ))

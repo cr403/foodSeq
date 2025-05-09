@@ -9,7 +9,8 @@ foodseqSetup(
   amplicon = "",
   sepVar = NULL,
   collapse = FALSE,
-  CommonNames = NULL
+  CommonNames = NULL,
+  CommonNameCol = NULL
 )
 }
 \arguments{
@@ -22,15 +23,19 @@ foodseqSetup(
 \item{collapse}{optional to run collapseNoMismatch()}
 
 \item{CommonNames}{optional space to add common names file}
+
+\item{CommonNameCol}{optional to add name of common name column to make a new column that's labeled with common name if available and lowestLevel if not}
 }
 \value{
 ps.raw = phyloseq object with no changes from physeq other than adding p/aMR, Shannon, and reads to samdf (no NA/human reads removed)
 
-ps = phyloseq object wiht no changes from physeq other than changes to ps.raw + animals glommed
+ps = phyloseq object with no changes from physeq other than changes to ps.raw + animals glommed + NA/human reads removed
 
-ps.ra = changes to ps + transformed to relative abundance
+ps.ra = changes to ps (but NA's conserved) + transformed to relative abundance
 
-ps.filt.clr = changes to ps + NA/human reads removed + clr transformation
+ps.filt.clr = changes to ps + clr transformation + NA/human reads removed
+
+ps.na = phyloseq object sub-setted for samples containing NA reads
 }
 \description{
 This function runs raw phyloseq object through typical inital processing steps.
