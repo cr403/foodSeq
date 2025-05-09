@@ -21,7 +21,7 @@ foodseqSetup(
 
 \item{collapse}{optional to run collapseNoMismatch()}
 
-\item{optional}{space to add common names file}
+\item{CommonNames}{optional space to add common names file}
 }
 \value{
 ps.raw = phyloseq object with no changes from physeq other than adding p/aMR, Shannon, and reads to samdf (no NA/human reads removed)

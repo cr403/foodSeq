@@ -6,7 +6,7 @@
 #' @param amplicon trnl or 12s
 #' @param sepVar define sam_data variable by which CLR transform will be done separately (e.g., seq_date, Study)
 #' @param collapse optional to run collapseNoMismatch()
-#' @param optional space to add common names file
+#' @param CommonNames optional space to add common names file
 #'
 #' @return ps.raw = phyloseq object with no changes from physeq other than adding p/aMR, Shannon, and reads to samdf (no NA/human reads removed)
 #' @return ps = phyloseq object wiht no changes from physeq other than changes to ps.raw + animals glommed
