@@ -75,7 +75,7 @@ foodseqSetup <- function(physeq,
 
     # Add common names -- this is based on the old common names file that is a 1-to-1 match for ASV's
     if(!is.null(CommonNames)) {
-      taxcols <- c("superkingdom", "phylum", "class", "order", "family", "genus", "species", "subspecies", "forma", "varietas")
+      taxcols <- c("superkingdom", "phylum", "class", "order", "family", "genus", "species", "subspecies", "forma", "varietas", "lowestLevel")
 
       tax_table(ps) <- ps@tax_table %>%
         data.frame() %>%
@@ -180,7 +180,7 @@ foodseqSetup <- function(physeq,
 
     # Add common names -- this is based on Ashish's new 12SV5 common names file
     if (!is.null(CommonNames)) {
-      cols <- c("asv", "species", "genus", "family", "order", "class", "phylum", "kingdom")
+      cols <- c("asv", "species", "genus", "family", "order", "class", "phylum", "kingdom", "lowestLevel")
 
       taxtab <- ps@tax_table %>%
         data.frame() %>%
