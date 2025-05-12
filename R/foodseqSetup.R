@@ -107,7 +107,7 @@ foodseqSetup <- function(physeq,
 
         taxtab <- taxtab %>%
           mutate(
-            scientific_name = trimws(coalesce(species, genus, family, order, class, phylum, kingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
+            scientific_name = trimws(coalesce(species, genus, family, order, class, phylum, superkingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
           )
 
         plantnames <- CommonNames %>%
