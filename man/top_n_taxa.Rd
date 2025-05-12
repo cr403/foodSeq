@@ -7,7 +7,7 @@
 top_n_taxa(
   physeq,
   n = 10,
-  name = "ShortName",
+  name = "taxlabel",
   labWidth = 60,
   title = NA,
   remNA = FALSE,

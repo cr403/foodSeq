@@ -1,3 +1,4 @@
+# This is just being kept in here to document how i calculated BMI for the SAGIP cohort
 # cdc_bmi <- read_csv('~/Library/CloudStorage/Box-Box/project_davidlab/LAD_LAB_Personnel/Caroline_R/4_Templates/CDC_age2-19_BMIpercentiles.csv') %>%
 #   data.frame() %>%
 #   mutate(across(everything(), as.numeric))
