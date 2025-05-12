@@ -31,19 +31,20 @@ fctLoad <- function(physeq,
     data.frame() %>%
     rownames_to_column(var = "asv") %>%
     left_join(taxtab, by = "asv") %>%
-    mutate(.data[[name]] = wrapLabels(.data[[name]], width = labWidth))
+    mutate(label = .data[[name]],
+           label = wrapLabels(label, labWidth))
 
   # Order loadings by absolute value
   PC_col <- sym(paste0("PC", PCx))
 
   result <- load.df %>%
     slice_max(order_by = abs(-!!PC_col), n = nTaxa) %>%
-    relocate(.data[[name]], .after = asv) %>%
-    relocate(PC_col, .after = .data[[name]])
+    relocate(label, .after = asv) %>%
+    relocate(PC_col, .after = label)
 
   # Plot top nTaxa
   plot <- result %>%
-    ggplot(aes(x = fct_reorder(.data[[name]], !!PC_col), y = !!PC_col)) +
+    ggplot(aes(x = fct_reorder(label, !!PC_col), y = !!PC_col)) +
     geom_bar(stat = "identity") +
     coord_flip() +
     theme(axis.title = element_text(size = 16, face = "bold"),
