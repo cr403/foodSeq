@@ -20,24 +20,23 @@ fctLoad <- function(physeq,
                     name = "taxlabel",
                     labWidth = 60){
 
+  # Extract loadings
+  load.df <- pca_output$loadings %>%
+    data.frame() %>%
+    rownames_to_column(var = "asv")
+
   # Extract taxa information
   taxtab <- physeq@tax_table %>%
     data.frame() %>%
     rownames_to_column(var = "asv") %>%
-    mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom))
-
-  # Extract loadings
-  load.df <- pca_output$loadings %>%
-    data.frame() %>%
-    rownames_to_column(var = "asv") %>%
-    left_join(taxtab, by = "asv") %>%
+    left_join(load.df, by = "asv") %>%
     mutate(label = .data[[name]],
            label = wrapLabels(label, labWidth))
 
   # Order loadings by absolute value
   PC_col <- sym(paste0("PC", PCx))
 
-  result <- load.df %>%
+  result <- taxtab %>%
     slice_max(order_by = abs(-!!PC_col), n = nTaxa) %>%
     relocate(label, .after = asv) %>%
     relocate(PC_col, .after = label)
