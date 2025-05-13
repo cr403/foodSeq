@@ -93,7 +93,7 @@ foodseqSetup <- function(physeq,
         if(!is.null(CommonNameCol)) {
           tax_table(ps) <- ps@tax_table %>%
             data.frame() %>%
-            mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]]), lowestLevel, .data[[CommonNameCol]])) %>%
+            mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]]) | trimws(.data[[CommonNameCol]]) == "", lowestLevel, .data[[CommonNameCol]])) %>%
             as.matrix() %>%
             tax_table()
         }
@@ -307,7 +307,7 @@ foodseqSetup <- function(physeq,
       if(!is.null(CommonNameCol)) {
         tax_table(ps) <- ps@tax_table %>%
           data.frame() %>%
-          mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]]), lowestLevel, .data[[CommonNameCol]])) %>%
+          mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]]) | trimws(.data[[CommonNameCol]]) == "", lowestLevel, .data[[CommonNameCol]])) %>%
           as.matrix() %>%
           tax_table()
       }
