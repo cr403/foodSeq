@@ -199,8 +199,11 @@ foodseqSetup <- function(physeq,
     }
 
     # Update read counts in phyloseq object
-    sample_data(ps.filt.clr)$reads <- sample_sums(ps.filt.clr)
     sample_data(ps)$reads <- sample_sums(ps)
+
+    ps.filt.clr@sam_data$reads <- 0 # initialize reads variable in ps.filt.clr
+    matching_samples <- intersect(rownames(ps.filt.clr@sam_data), rownames(ps@sam_data))
+    samle_data(ps.filt.clr)[matching_samples, "reads"] <- sample_data(ps)[matching_samples, "reads"]
 
     # pMR
     pMR <- ifelse(subset_taxa(ps.filt.clr, !is.na(superkingdom))@otu_table>0,1,0) %>%      # Converts OTU table values to presence/absence
@@ -443,8 +446,11 @@ foodseqSetup <- function(physeq,
     ps.noHuman@sam_data$Shannon_diversity_animals <- shannon$Shannon
 
     # Update read counts
-    sample_data(ps.filt.clr)$reads <- sample_sums(ps.filt.clr)
     sample_data(ps)$reads <- sample_sums(ps)
+
+    ps.filt.clr@sam_data$reads <- 0 # initialize reads variable in ps.filt.clr
+    matching_samples <- intersect(rownames(ps.filt.clr@sam_data), rownames(ps@sam_data))
+    samle_data(ps.filt.clr)[matching_samples, "reads"] <- sample_data(ps)[matching_samples, "reads"]
 
     # ps.na
     ps.na <- subset_taxa(ps, is.na(superkingdom))
