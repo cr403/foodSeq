@@ -90,7 +90,7 @@ top_n_taxa <- function(physeq,
     top_taxa_plot <- top_taxa %>%
       ggplot(aes(x = tidytext::reorder_within(label, prevalence, .data[[facet]]), y = prevalence)) +
       facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow) +
-      tidytext::scale_x_reordered()
+      tidytext::scale_x_reordered(drop = TRUE)
   } else {
     top_taxa_plot <- top_taxa %>%
       ggplot(aes(x = fct_reorder(label, prevalence), y = prevalence))
