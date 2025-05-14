@@ -121,17 +121,32 @@ top_n_taxa <- function(physeq,
     top_taxa_plot <- top_taxa_plot
     }
 
+  # if (color) {
+  #   if (!is.null(facet)) {
+  #     # Global colors (e.g., poaceae is the same color in all facets)
+  #     if (colorGlobal) {
+  #       top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
+  #     } else { # Local colors (e.g., all facets have default colors within graph)
+  #       top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = rank))
+  #     }
+  #   } else {
+  #     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
+  #   }
+  # } else {
+  #   top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
+  # }
+
   if (color) {
     if (!is.null(facet)) {
-      if (colorGlobal) {
+      if(colorGlobal) { # Global
+        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = label))
+      } else { # Local
         top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
-      } else {
-        top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = rank))
       }
-    } else {
+    } else { # No facets + colors in order
       top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
     }
-  } else {
+  } else { # No colors
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
   }
 
