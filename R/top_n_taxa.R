@@ -85,6 +85,14 @@ top_n_taxa <- function(physeq,
     slice_head(n = n) %>%
     ungroup()
 
+  # Ensure that the number of taxa in the dataset are sufficient to meet parameter n
+  taxa_to_remove <- which(top_taxa$prevalence == 0)
+
+  if (length(taxa_to_remove) > 0) {
+    warning(paste0("There were groups with less than ", n, " taxa present in the dataset --", "\n"))
+    top_taxa <- top_taxa[-taxa_to_remove, ] # remove taxa with prevalence == 0
+  }
+
   # Plot
   if (!is.null(facet)) {
     top_taxa_plot <- top_taxa %>%
