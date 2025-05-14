@@ -121,21 +121,6 @@ top_n_taxa <- function(physeq,
     top_taxa_plot <- top_taxa_plot
     }
 
-  # if (color) {
-  #   if (!is.null(facet)) {
-  #     # Global colors (e.g., poaceae is the same color in all facets)
-  #     if (colorGlobal) {
-  #       top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = tidytext::reorder_within(label, prevalence, .data[[facet]])))
-  #     } else { # Local colors (e.g., all facets have default colors within graph)
-  #       top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = rank))
-  #     }
-  #   } else {
-  #     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity", aes(fill = fct_reorder(label, prevalence)))
-  #   }
-  # } else {
-  #   top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
-  # }
-
   if (color) {
     if (!is.null(facet)) {
       if(colorGlobal) { # Global
@@ -148,34 +133,6 @@ top_n_taxa <- function(physeq,
     }
   } else { # No colors
     top_taxa_plot <- top_taxa_plot + geom_bar(stat = "identity")
-  }
-
-  if (color && !is.null(facet) && colorGlobal) {
-    # Determine global label order based on prevalence from first facet
-    facet_levels <- unique(top_taxa[[facet]])
-    reference_facet <- facet_levels[1]  # or choose explicitly
-
-    label_order <- top_taxa %>%
-      filter(.data[[facet]] == reference_facet) %>%
-      arrange(desc(prevalence)) %>%
-      distinct(label) %>%
-      pull(label)
-
-    # Set factor levels for global color ordering
-    top_taxa <- top_taxa %>%
-      mutate(label = factor(label, levels = label_order))
-
-    # Redraw the plot with updated label levels
-    top_taxa_plot <- top_taxa %>%
-      ggplot(aes(
-        x = tidytext::reorder_within(label, prevalence, .data[[facet]]),
-        y = prevalence,
-        fill = label
-      )) +
-      facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow) +
-      coord_flip() +
-      tidytext::scale_x_reordered(drop = TRUE) +
-      geom_bar(stat = "identity")
   }
 
   if(is.na(title)) {
