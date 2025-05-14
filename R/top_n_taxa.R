@@ -173,6 +173,7 @@ top_n_taxa <- function(physeq,
         fill = label
       )) +
       facet_wrap(~.data[[facet]], scales = "free_y", nrow = nrow) +
+      coord_flip() +
       tidytext::scale_x_reordered(drop = TRUE) +
       geom_bar(stat = "identity")
   }
