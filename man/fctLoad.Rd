@@ -9,7 +9,7 @@ fctLoad(
   pca_output,
   PCx = 1,
   nTaxa = 10,
-  name = "ShortName",
+  name = "taxlabel",
   labWidth = 60
 )
 }
