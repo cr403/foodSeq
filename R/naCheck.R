@@ -34,7 +34,7 @@ naCheck <- function(physeq,
       prune_samples(get_variable(physeq, .data[[group]]) %in% i, .) %>%
       prune_taxa(taxa_sums(.) > 0, .) %>%
       tax_table() %>%
-      data.frame()
+      data.frame() %>%
       filter(is.na(.data[[taxlevel]]))
 
     cat(i, " has ", nrow(df), " NA's", "\n")
