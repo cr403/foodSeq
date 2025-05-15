@@ -11,7 +11,7 @@
 #' @export
 naCheck <- function(physeq,
                     trnl = TRUE,
-                    group = NULL){
+                    group = "Study"){
 
   if (!is.null(group)) {
     groups <- physeq@sam_data %>%
