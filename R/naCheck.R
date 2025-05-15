@@ -31,7 +31,7 @@ naCheck <- function(physeq,
   for(i in groups) {
 
     df <- physeq %>%
-      prune_samples(get_variable(physeq, .data[[group]]) %in% i, .) %>%
+      prune_samples(get_variable(physeq, group) %in% i, .) %>%
       prune_taxa(taxa_sums(.) > 0, .) %>%
       tax_table() %>%
       data.frame() %>%
