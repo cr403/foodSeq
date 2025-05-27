@@ -4,7 +4,7 @@
 \alias{naCheck}
 \title{NA Checker}
 \usage{
-naCheck(physeq, trnl = TRUE, group = NULL)
+naCheck(physeq, trnl = TRUE, group = "Study")
 }
 \arguments{
 \item{physeq}{phyloseq object of interest}
