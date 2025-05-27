@@ -30,15 +30,15 @@ foodseqSetup <- function(physeq,
   ps <- physeq
   amplicon <- tolower(amplicon) # change casing for matching
 
-  # # ensure that colnames(tax_table) are all lowercase
-  # taxdf <- ps@tax_table %>%
-  #   data.frame()
-  #
-  # colnames(taxdf) <- tolower(colnames(taxdf))
-  #
-  # tax_table(ps) <- taxdf %>%
-  #   as.matrix() %>%
-  #   tax_table()
+  # ensure that colnames(tax_table) are all lowercase
+  taxdf <- ps@tax_table %>%
+    data.frame()
+
+  colnames(taxdf) <- tolower(colnames(taxdf))
+
+  tax_table(ps) <- taxdf %>%
+    as.matrix() %>%
+    tax_table()
 
   # Initializes sample data if you're working with raw phyloseq
   if(is.null(ps@sam_data)) {
@@ -68,100 +68,100 @@ foodseqSetup <- function(physeq,
       otu_table(ps) <- otu_table(seqtab.merged, taxa_are_rows = FALSE) # Add back OTU table to ps
     }
 
-    # # Add lowestLevel
-    # tax_table(ps) <- ps@tax_table %>%
-    #   data.frame() %>%
-    #   mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom)) %>%
-    #   as.matrix() %>%
-    #   tax_table()
-    #
-    # # Add common names
-    # if(!is.null(CommonNames)) {
-    #   if (oldplantNames) { # This is based on the old common names file that is a 1-to-1 match for ASV's
-    #     taxcols <- c("superkingdom", "phylum", "class", "order", "family", "genus", "species", "subspecies", "forma", "varietas", "lowestLevel")
-    #
-    #     tax_table(ps) <- ps@tax_table %>%
-    #       data.frame() %>%
-    #       rownames_to_column(var = "asv") %>%
-    #       select(asv, any_of(taxcols)) %>% # prevents double assignment of column names
-    #       left_join(CommonNames, by = "asv") %>%
-    #       column_to_rownames(var = "asv") %>%
-    #       as.matrix() %>%
-    #       tax_table()
-    #
-    #     # Add taxonomy label that defaults to common name but fills in with lowestLevel if NA
-    #     if(!is.null(CommonNameCol)) {
-    #       tax_table(ps) <- ps@tax_table %>%
-    #         data.frame() %>%
-    #         mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]]) | trimws(.data[[CommonNameCol]]) == "", lowestLevel, .data[[CommonNameCol]])) %>%
-    #         as.matrix() %>%
-    #         tax_table()
-    #     }
-    #   } else { # This is based on Ashish's new common names file
-    #     cols <- c("asv", "species", "genus", "family", "order", "class", "phylum", "superkingdom", "lowestLevel")
-    #
-    #     taxtab <- ps@tax_table %>%
-    #       data.frame() %>%
-    #       rownames_to_column(var = "asv") %>%
-    #       dplyr::select(all_of(cols))
-    #
-    #     taxtab <- taxtab %>%
-    #       mutate(
-    #         scientific_name = trimws(coalesce(species, genus, family, order, class, phylum, superkingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
-    #       )
-    #
-    #     plantnames <- CommonNames %>%
-    #       dplyr::rename(scientific_name = name) %>%
-    #       dplyr::select(scientific_name, common_name)
-    #
-    #     df <- left_join(taxtab, plantnames, by = join_by(scientific_name))
-    #
-    #     result <- df %>%
-    #       group_by(asv) %>%
-    #       summarize(
-    #         # Find the most specific common taxonomic classification
-    #         name = {
-    #           ranks <- c("species", "genus", "family", "order", "class", "phylum", "superkingdom")  # Specific to general
-    #           common_rank <- ranks[sapply(ranks, function(rank) {
-    #             # Exclude NA and check if all remaining values are identical
-    #             values <- na.omit(cur_data()[[rank]])
-    #             length(unique(values)) == 1
-    #           })][1]
-    #
-    #           if (!is.null(common_rank) && !is.na(common_rank)) {
-    #             # Return the single shared value for the rank
-    #             unique(na.omit(cur_data()[[common_rank]]))
-    #           } else {
-    #             NA_character_  # If no common rank is found, return NA
-    #           }
-    #         },
-    #         # Concatenate scientific names
-    #         taxon = paste(unique(scientific_name), collapse = "; "),
-    #         # Concatenate common names
-    #         common_name = paste(na.omit(unique(common_name)), collapse = "; ")
-    #       ) %>%
-    #       ungroup()  %>% # Remove grouping
-    #       select(asv, common_name)
-    #
-    #     tax_table(ps) <- ps@tax_table %>%
-    #       data.frame() %>%
-    #       rownames_to_column(var = "asv") %>%
-    #       select(all_of(cols)) %>%
-    #       left_join(result, by = "asv") %>%
-    #       column_to_rownames(var = "asv") %>%
-    #       as.matrix() %>%
-    #       tax_table()
-    #
-    #     # Add taxonomy label that defaults to common name but fills in with lowestLevel if NA
-    #     if(!is.null(CommonNameCol)) {
-    #       tax_table(ps) <- ps@tax_table %>%
-    #         data.frame() %>%
-    #         mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]]) | trimws(.data[[CommonNameCol]]) == "", lowestLevel, .data[[CommonNameCol]])) %>%
-    #         as.matrix() %>%
-    #         tax_table()
-    #     }
-    #   }
-    # }
+    # Add lowestLevel
+    tax_table(ps) <- ps@tax_table %>%
+      data.frame() %>%
+      mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom)) %>%
+      as.matrix() %>%
+      tax_table()
+
+    # Add common names
+    if(!is.null(CommonNames)) {
+      if (oldplantNames) { # This is based on the old common names file that is a 1-to-1 match for ASV's
+        taxcols <- c("superkingdom", "phylum", "class", "order", "family", "genus", "species", "subspecies", "forma", "varietas", "lowestLevel")
+
+        tax_table(ps) <- ps@tax_table %>%
+          data.frame() %>%
+          rownames_to_column(var = "asv") %>%
+          select(asv, any_of(taxcols)) %>% # prevents double assignment of column names
+          left_join(CommonNames, by = "asv") %>%
+          column_to_rownames(var = "asv") %>%
+          as.matrix() %>%
+          tax_table()
+
+        # Add taxonomy label that defaults to common name but fills in with lowestLevel if NA
+        if(!is.null(CommonNameCol)) {
+          tax_table(ps) <- ps@tax_table %>%
+            data.frame() %>%
+            mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]]) | trimws(.data[[CommonNameCol]]) == "", lowestLevel, .data[[CommonNameCol]])) %>%
+            as.matrix() %>%
+            tax_table()
+        }
+      } else { # This is based on Ashish's new common names file
+        cols <- c("asv", "species", "genus", "family", "order", "class", "phylum", "superkingdom", "lowestLevel")
+
+        taxtab <- ps@tax_table %>%
+          data.frame() %>%
+          rownames_to_column(var = "asv") %>%
+          dplyr::select(all_of(cols))
+
+        taxtab <- taxtab %>%
+          mutate(
+            scientific_name = trimws(coalesce(species, genus, family, order, class, phylum, superkingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
+          )
+
+        plantnames <- CommonNames %>%
+          dplyr::rename(scientific_name = name) %>%
+          dplyr::select(scientific_name, common_name)
+
+        df <- left_join(taxtab, plantnames, by = join_by(scientific_name))
+
+        result <- df %>%
+          group_by(asv) %>%
+          summarize(
+            # Find the most specific common taxonomic classification
+            name = {
+              ranks <- c("species", "genus", "family", "order", "class", "phylum", "superkingdom")  # Specific to general
+              common_rank <- ranks[sapply(ranks, function(rank) {
+                # Exclude NA and check if all remaining values are identical
+                values <- na.omit(cur_data()[[rank]])
+                length(unique(values)) == 1
+              })][1]
+
+              if (!is.null(common_rank) && !is.na(common_rank)) {
+                # Return the single shared value for the rank
+                unique(na.omit(cur_data()[[common_rank]]))
+              } else {
+                NA_character_  # If no common rank is found, return NA
+              }
+            },
+            # Concatenate scientific names
+            taxon = paste(unique(scientific_name), collapse = "; "),
+            # Concatenate common names
+            common_name = paste(na.omit(unique(common_name)), collapse = "; ")
+          ) %>%
+          ungroup()  %>% # Remove grouping
+          select(asv, common_name)
+
+        tax_table(ps) <- ps@tax_table %>%
+          data.frame() %>%
+          rownames_to_column(var = "asv") %>%
+          select(all_of(cols)) %>%
+          left_join(result, by = "asv") %>%
+          column_to_rownames(var = "asv") %>%
+          as.matrix() %>%
+          tax_table()
+
+        # Add taxonomy label that defaults to common name but fills in with lowestLevel if NA
+        if(!is.null(CommonNameCol)) {
+          tax_table(ps) <- ps@tax_table %>%
+            data.frame() %>%
+            mutate(taxlabel = ifelse(is.na(.data[[CommonNameCol]]) | trimws(.data[[CommonNameCol]]) == "", lowestLevel, .data[[CommonNameCol]])) %>%
+            as.matrix() %>%
+            tax_table()
+        }
+      }
+    }
 
     # Relative Abundance
     ps.ra <- transform_sample_counts(ps, function(x){x/sum(x)})
