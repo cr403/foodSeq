@@ -5,7 +5,7 @@
 #' @param physeq filtered and clr transfomed phyloseq object
 #' @param equation e.g., "country + age + treatment" or "country*age + treatment"
 #' @param method euclidean
-#' @param by = "terms"
+#' @param by "terms" for sequential assessment/control for covariates in order, "margins" for individual assessment/control for all other variables
 #' @param permutations number of permutations
 #' @param strata grouping variable
 #' @param seed random seed for reproducibility

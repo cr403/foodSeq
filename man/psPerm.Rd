@@ -21,7 +21,7 @@ psPerm(
 
 \item{method}{euclidean}
 
-\item{by}{= "terms"}
+\item{by}{"terms" for sequential assessment/control for covariates in order, "margins" for individual assessment/control for all other variables}
 
 \item{permutations}{number of permutations}
 
