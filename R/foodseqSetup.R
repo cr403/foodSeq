@@ -71,6 +71,7 @@ foodseqSetup <- function(physeq,
     # Add lowestLevel
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
+      select(-any_of(c("lowestLevel"))) %>%
       mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, superkingdom)) %>%
       as.matrix() %>%
       tax_table()
@@ -248,6 +249,7 @@ foodseqSetup <- function(physeq,
     # Add lowestLevel
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
+      select(-any_of(c("lowestLevel"))) %>%
       mutate(lowestLevel = coalesce(subspecies, species, genus, family, order, class, phylum, kingdom)) %>%
       as.matrix() %>%
       tax_table()
