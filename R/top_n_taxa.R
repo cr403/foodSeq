@@ -73,7 +73,7 @@ top_n_taxa <- function(physeq,
   # Add taxonomy labels
   top_taxa <- taxtab %>%
     left_join(seqtab, by = "asv") %>%
-    mutate(label = ifelse(is.na(.data[[name]], lowestLevel, .data[[name]])),
+    mutate(label = ifelse(is.na(.data[[name]]), lowestLevel, .data[[name]]),
            label = case_when(
              is.na(label) ~ paste0("NA", row_number()),
              TRUE ~ label
