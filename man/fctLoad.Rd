@@ -10,7 +10,10 @@ fctLoad(
   PCx = 1,
   nTaxa = 10,
   name = "taxlabel",
-  labWidth = 60
+  labWidth = 60,
+  title = NULL,
+  titleSize = 16,
+  textSize = 14
 )
 }
 \arguments{
@@ -25,6 +28,12 @@ fctLoad(
 \item{name}{name of common name column}
 
 \item{labWidth}{character length breakpoint for wrapping labels}
+
+\item{title}{optional title}
+
+\item{titleSize}{optional title size}
+
+\item{textSize}{optional text size}
 }
 \value{
 load.df = loadings data frame in descending order by PCx

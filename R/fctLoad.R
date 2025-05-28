@@ -8,6 +8,9 @@
 #' @param nTaxa number of taxa to include on plot
 #' @param name name of common name column
 #' @param labWidth character length breakpoint for wrapping labels
+#' @param title optional title
+#' @param titleSize optional title size
+#' @param textSize optional text size
 #'
 #' @return load.df = loadings data frame in descending order by PCx
 #' @return plot = plot of top nTaxa taxa for PCx
@@ -18,7 +21,10 @@ fctLoad <- function(physeq,
                     PCx = 1,
                     nTaxa = 10,
                     name = "taxlabel",
-                    labWidth = 60){
+                    labWidth = 60,
+                    title = NULL,
+                    titleSize = 16,
+                    textSize = 14){
 
   # Extract loadings
   load.df <- pca_output$loadings %>%
@@ -46,9 +52,13 @@ fctLoad <- function(physeq,
     ggplot(aes(x = fct_reorder(label, !!PC_col), y = !!PC_col)) +
     geom_bar(stat = "identity") +
     coord_flip() +
-    theme(axis.title = element_text(size = 16, face = "bold"),
+    theme(axis.title = element_text(size = titleSize, face = "bold"),
           axis.title.y = element_blank(),
-          axis.text = element_text(size = 14))
+          axis.text = element_text(size = textSize))
+
+  if(!is.null(title)) {
+    plot <- plot + labs(title = title)
+  }
 
   return(list(load.df = result, plot = plot))
 
