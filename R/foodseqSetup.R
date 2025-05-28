@@ -18,6 +18,8 @@
 #'
 #'
 #' @importFrom dada2 collapseNoMismatch
+#' @importFrom vegan diversity
+#' @importFrom vegan specnumber
 #'
 #' @export
 foodseqSetup <- function(physeq,
@@ -231,6 +233,24 @@ foodseqSetup <- function(physeq,
       dplyr::rename(Shannon_diversity_plants = Shannon) %>%
       column_to_rownames(var = "samid") %>%
       sample_data()
+
+    # Simpson's Evenness
+    simpson_reciprocal <- vegan::diversity(otu_table(ps.ra), index = "invsimpson")
+    richness <- vegan::specnumber(otu_table(ps))
+    simpson_evenness <- (simpson_reciprocal / richness) %>%
+      data.frame(Simpson_evenness_plants = .) %>%
+      rownames_to_column(var = "samid")
+
+    ps@sam_data$Simpson_evenness_plants <- simpson_evenness$Simpson_evenness_plants
+    sample_data(ps.filt.clr) <- ps.filt.clr@sam_data %>%
+      data.frame() %>%
+      rownames_to_column(var = "samid") %>%
+      select(-any_of("Simpson_evenness_plants")) %>%
+      left_join(simpson_evenness, by = "samid") %>%
+      mutate(Simpson_evenness_plants = ifelse(is.na(Simpson_evenness_plants), 0, Simpson_evenness_plants)) %>%
+      column_to_rownames(var = "samid") %>%
+      sample_data()
+
 
     # ps.na
     ps.na <- subset_taxa(ps, is.na(superkingdom))
