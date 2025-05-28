@@ -56,7 +56,7 @@ fctLoad <- function(physeq,
     coord_flip() +
     theme(
       plot.title = element_text(size = titleSize, face = "bold"),
-      axis.title = element_text(size = plotTitleSize, face = "bold"),
+      axis.title = element_text(size = axisTitleSize, face = "bold"),
       axis.title.y = element_blank(),
       axis.text = element_text(size = textSize))
 
