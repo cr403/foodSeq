@@ -10,6 +10,7 @@
 #' @param labWidth character length breakpoint for wrapping labels
 #' @param title optional title
 #' @param titleSize optional title size
+#' @param axisTitleSize optional axis title size
 #' @param textSize optional text size
 #'
 #' @return load.df = loadings data frame in descending order by PCx
@@ -23,7 +24,8 @@ fctLoad <- function(physeq,
                     name = "taxlabel",
                     labWidth = 60,
                     title = NULL,
-                    titleSize = 16,
+                    titleSize = 18,
+                    axisTitleSize = 16,
                     textSize = 14){
 
   # Extract loadings
@@ -52,9 +54,11 @@ fctLoad <- function(physeq,
     ggplot(aes(x = fct_reorder(label, !!PC_col), y = !!PC_col)) +
     geom_bar(stat = "identity") +
     coord_flip() +
-    theme(axis.title = element_text(size = titleSize, face = "bold"),
-          axis.title.y = element_blank(),
-          axis.text = element_text(size = textSize))
+    theme(
+      plot.title = element_text(size = titleSize, face = "bold"),
+      axis.title = element_text(size = plotTitleSize, face = "bold"),
+      axis.title.y = element_blank(),
+      axis.text = element_text(size = textSize))
 
   if(!is.null(title)) {
     plot <- plot + labs(title = title)

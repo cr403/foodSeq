@@ -12,7 +12,8 @@ fctLoad(
   name = "taxlabel",
   labWidth = 60,
   title = NULL,
-  titleSize = 16,
+  titleSize = 18,
+  axisTitleSize = 16,
   textSize = 14
 )
 }
@@ -32,6 +33,8 @@ fctLoad(
 \item{title}{optional title}
 
 \item{titleSize}{optional title size}
+
+\item{axisTitleSize}{optional axis title size}
 
 \item{textSize}{optional text size}
 }
