@@ -125,7 +125,7 @@ taxPrev <- function(physeq, # phyloseq object
   # Build remaining parts of graph
   prev.plot <- prev.plot +
     coord_flip() +
-    labs(y = "Prevalence (% Samples w/ Taxa)") +
+    labs(y = "% samples w/ taxa") +
     theme(plot.title = element_text(size = titleSize, face = "bold"),
           axis.title = element_text(size = axtitleSize, face = "bold"),
           axis.text = element_text(size = textSize),
