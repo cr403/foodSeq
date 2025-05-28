@@ -250,6 +250,15 @@ foodseqSetup <- function(physeq,
       mutate(Simpson_evenness_plants = ifelse(is.na(Simpson_evenness_plants), 0, Simpson_evenness_plants)) %>%
       column_to_rownames(var = "samid") %>%
       sample_data()
+    sample_data(ps.ra) <- ps.ra@sam_data %>%
+      data.frame() %>%
+      rownames_to_column(var = "samid") %>%
+      select(-any_of("Simpson_evenness_plants")) %>%
+      left_join(simpson_evenness, by = "samid") %>%
+      mutate(Simpson_evenness_plants = ifelse(is.na(Simpson_evenness_plants), 0, Simpson_evenness_plants)) %>%
+      column_to_rownames(var = "samid") %>%
+      sample_data()
+
 
 
     # ps.na
