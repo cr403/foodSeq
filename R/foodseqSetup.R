@@ -278,10 +278,12 @@ foodseqSetup <- function(physeq,
     # Add lowestLevel
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
-      select(c(subspecies, species, genus, family, order, class, phylum, kingdom)) %>% # remove potential duplicates
-      mutate(lowestLevel = coalesce(subspecies, species, genus, family, order, class, phylum, kingdom)) %>%
+      select(c(species, genus, family, order, class, phylum, kingdom)) %>% # remove potential duplicates
+      mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, kingdom)) %>%
       as.matrix() %>%
       tax_table()
+
+    warning("**********subspecies was temporarily removed from the 12SV5 section of this function. if this is not correct for this cohort, I suggest editing function and re-running!!!!!")
 
     # Add common names -- this is based on Ashish's new 12SV5 common names file
     if (!is.null(CommonNames)) {
