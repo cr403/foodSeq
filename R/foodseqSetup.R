@@ -268,7 +268,7 @@ foodseqSetup <- function(physeq,
   ##############################################################################
   # 12SV5
   if(amplicon == "12s") {
-    # Replace "NA" strings with NA value
+    # Replace "NA" strings with NA value (especially important in subspecies)
     tax_table(ps) <- tax_table(ps) %>%
       as.data.frame() %>%
       mutate(across(everything(), ~ ifelse(. == "NA", NA, .))) %>%
@@ -278,16 +278,14 @@ foodseqSetup <- function(physeq,
     # Add lowestLevel
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
-      select(c(species, genus, family, order, class, phylum, kingdom)) %>% # remove potential duplicates
-      mutate(lowestLevel = coalesce(species, genus, family, order, class, phylum, kingdom)) %>%
+      select(any_of(c(subspecies, species, genus, family, order, class, phylum, kingdom))) %>% # remove potential duplicates
+      mutate(lowestLevel = coalesce(subspecies, species, genus, family, order, class, phylum, kingdom)) %>%
       as.matrix() %>%
       tax_table()
 
-    warning("**********subspecies was temporarily removed from the 12SV5 section of this function. if this is not correct for this cohort, I suggest editing function and re-running!!!!!")
-
     # Add common names -- this is based on Ashish's new 12SV5 common names file
     if (!is.null(CommonNames)) {
-      cols <- c("asv", "species", "genus", "family", "order", "class", "phylum", "kingdom", "lowestLevel")
+      cols <- c("asv", "subspecies", "species", "genus", "family", "order", "class", "phylum", "kingdom", "lowestLevel")
 
       taxtab <- ps@tax_table %>%
         data.frame() %>%
@@ -296,7 +294,7 @@ foodseqSetup <- function(physeq,
 
       taxtab <- taxtab %>%
         mutate(
-          scientific_name = trimws(coalesce(species, genus, family, order, class, phylum, kingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
+          scientific_name = trimws(coalesce(subspecies, species, genus, family, order, class, phylum, kingdom))  # Choose the lowest assigned level; for trnL add Varietas and Forma
         )
 
       animalnames <- CommonNames %>%
@@ -310,7 +308,7 @@ foodseqSetup <- function(physeq,
         summarize(
           # Find the most specific common taxonomic classification
           name = {
-            ranks <- c("species", "genus", "family", "order", "class", "phylum", "kingdom")  # Specific to general
+            ranks <- c("subspecies", "species", "genus", "family", "order", "class", "phylum", "kingdom")  # Specific to general
             common_rank <- ranks[sapply(ranks, function(rank) {
               # Exclude NA and check if all remaining values are identical
               values <- na.omit(cur_data()[[rank]])
