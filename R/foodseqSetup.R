@@ -73,7 +73,7 @@ foodseqSetup <- function(physeq,
     # Add lowestLevel
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
-      select(c(varietas, forma, subspecies, species, genus, family, order, class, phylum, superkingdom)) %>% # remove potential duplicates
+      dplyr::select(c(varietas, forma, subspecies, species, genus, family, order, class, phylum, superkingdom)) %>% # remove potential duplicates
       mutate(lowestLevel = coalesce(varietas, forma, species, genus, family, order, class, phylum, superkingdom)) %>%
       as.matrix() %>%
       tax_table()
@@ -86,7 +86,7 @@ foodseqSetup <- function(physeq,
         tax_table(ps) <- ps@tax_table %>%
           data.frame() %>%
           rownames_to_column(var = "asv") %>%
-          select(asv, any_of(taxcols)) %>% # prevents double assignment of column names
+          dplyr::select(asv, any_of(taxcols)) %>% # prevents double assignment of column names
           left_join(CommonNames, by = "asv") %>%
           column_to_rownames(var = "asv") %>%
           as.matrix() %>%
@@ -144,12 +144,12 @@ foodseqSetup <- function(physeq,
             common_name = paste(na.omit(unique(common_name)), collapse = "; ")
           ) %>%
           ungroup()  %>% # Remove grouping
-          select(asv, common_name)
+          dplyr::select(asv, common_name)
 
         tax_table(ps) <- ps@tax_table %>%
           data.frame() %>%
           rownames_to_column(var = "asv") %>%
-          select(all_of(cols)) %>%
+          dplyr::select(all_of(cols)) %>%
           left_join(result, by = "asv") %>%
           column_to_rownames(var = "asv") %>%
           as.matrix() %>%
@@ -229,7 +229,7 @@ foodseqSetup <- function(physeq,
       rownames_to_column(var = "samid") %>%
       left_join(shannon, by = "samid") %>%
       mutate(Shannon = ifelse(is.na(Shannon), 0, Shannon)) %>%
-      select(-any_of("Shannon_diversity_plants")) %>%
+      dplyr::select(-any_of("Shannon_diversity_plants")) %>%
       dplyr::rename(Shannon_diversity_plants = Shannon) %>%
       column_to_rownames(var = "samid") %>%
       sample_data()
@@ -245,7 +245,7 @@ foodseqSetup <- function(physeq,
     sample_data(ps.filt.clr) <- ps.filt.clr@sam_data %>%
       data.frame() %>%
       rownames_to_column(var = "samid") %>%
-      select(-any_of("Simpson_evenness_plants")) %>%
+      dplyr::select(-any_of("Simpson_evenness_plants")) %>%
       left_join(simpson_evenness, by = "samid") %>%
       mutate(Simpson_evenness_plants = ifelse(is.na(Simpson_evenness_plants), 0, Simpson_evenness_plants)) %>%
       column_to_rownames(var = "samid") %>%
@@ -253,7 +253,7 @@ foodseqSetup <- function(physeq,
     sample_data(ps.ra) <- ps.ra@sam_data %>%
       data.frame() %>%
       rownames_to_column(var = "samid") %>%
-      select(-any_of("Simpson_evenness_plants")) %>%
+      dplyr::select(-any_of("Simpson_evenness_plants")) %>%
       left_join(simpson_evenness, by = "samid") %>%
       mutate(Simpson_evenness_plants = ifelse(is.na(Simpson_evenness_plants), 0, Simpson_evenness_plants)) %>%
       column_to_rownames(var = "samid") %>%
@@ -278,7 +278,7 @@ foodseqSetup <- function(physeq,
     # Add lowestLevel
     tax_table(ps) <- ps@tax_table %>%
       data.frame() %>%
-      select(c("subspecies", "species", "genus", "family", "order", "class", "phylum", "kingdom")) %>% # remove potential duplicates
+      dplyr::select(any_of(c("subspecies", "species", "genus", "family", "order", "class", "phylum", "kingdom"))) %>% # remove potential duplicates
       mutate(lowestLevel = coalesce(subspecies, species, genus, family, order, class, phylum, kingdom)) %>%
       as.matrix() %>%
       tax_table()
@@ -328,12 +328,12 @@ foodseqSetup <- function(physeq,
           common_name = paste(na.omit(unique(common_name)), collapse = "; ")
         ) %>%
         ungroup()  %>% # Remove grouping
-        select(asv, common_name)
+        dplyr::select(asv, common_name)
 
       tax_table(ps) <- ps@tax_table %>%
         data.frame() %>%
         rownames_to_column(var = "asv") %>%
-        select(all_of(cols)) %>%
+        dplyr::select(all_of(cols)) %>%
         left_join(result, by = "asv") %>%
         column_to_rownames(var = "asv") %>%
         relocate(lowestLevel, .after = everything()) %>%
@@ -385,7 +385,7 @@ foodseqSetup <- function(physeq,
       human_percent <- total_reads %>%
         left_join(human_reads, by = "sample") %>%
         mutate(human_reads_percent = human_reads/total_reads*100) %>%
-        select(sample, human_reads, human_reads_percent)
+        dplyr::select(sample, human_reads, human_reads_percent)
 
       sample_data(ps) <- ps@sam_data %>%
         data.frame() %>%
