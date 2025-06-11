@@ -42,7 +42,7 @@ psPerm <- function(physeq,
 
   # Check for missing predictor values
   missing_samples <- samdf %>%
-    select(all_of(predictors)) %>%
+    dplyr::select(all_of(predictors)) %>%
     apply(1, function(row) any(is.na(row)))
 
   num_removed <- sum(missing_samples)
