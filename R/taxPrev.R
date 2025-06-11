@@ -63,10 +63,10 @@ taxPrev <- function(physeq, # phyloseq object
   # Take out facet variable from sample data
   if(!is.null(facet)) {
     samdf <- samdf %>%
-      select(samid, .data[[facet]])
+      dplyr::select(samid, .data[[facet]])
   } else {
     samdf <- samdf %>%
-      select(samid)
+      dplyr::select(samid)
   }
 
   # Extract otu table and join with tax/samdf tables
